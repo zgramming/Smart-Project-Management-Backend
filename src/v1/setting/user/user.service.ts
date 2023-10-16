@@ -1,26 +1,155 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PrismaService } from 'src/prisma.service';
+import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
+import { encryptPassword, handlingCustomError } from 'src/utils/function';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private readonly prisma: PrismaService) {}
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const { roleId, name, username, email, password, status } = createUserDto;
+      const result = await this.prisma.user.create({
+        data: {
+          roleId,
+          name,
+          username,
+          email,
+          password: await encryptPassword(password),
+          status,
+        },
+      });
+
+      return {
+        error: false,
+        message: 'User created successfully',
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll(params?: BaseQueryParamsInterface) {
+    try {
+      const page = params.page ?? 1;
+      const limit = params.limit ?? 100;
+
+      const result = await this.prisma.user.findMany({
+        take: limit,
+        skip: (page - 1) * limit,
+      });
+
+      return {
+        error: false,
+        message: 'User retrieved successfully',
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    try {
+      const result = await this.prisma.user.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      console.log({ result });
+
+      if (!result) {
+        throw new NotFoundException({
+          error: true,
+          message: 'User not found',
+          data: null,
+        });
+      }
+
+      return {
+        error: false,
+        message: 'User retrieved successfully',
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException({
+          error: true,
+          message: 'User not found',
+          data: null,
+        });
+      }
+
+      const { roleId, name, username, email, password, status } = updateUserDto;
+      const result = await this.prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          roleId,
+          name,
+          username,
+          email,
+          password,
+          status,
+        },
+      });
+
+      return {
+        error: false,
+        message: 'User updated successfully',
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException({
+          error: true,
+          message: 'User not found',
+          data: null,
+        });
+      }
+
+      const result = await this.prisma.user.delete({
+        where: {
+          id,
+        },
+      });
+
+      return {
+        error: false,
+        message: 'User deleted successfully',
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
   }
 }
