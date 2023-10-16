@@ -13,7 +13,18 @@ import { MasterDataModule } from './v1/setting/master-data/master-data.module';
 import { ParameterModule } from './v1/setting/parameter/parameter.module';
 
 @Module({
-  imports: [CategoryModulModule, RoleModule, UserModule, ModulModule, MenuModule, AccessModulModule, AccessMenuModule, MasterCategoryModule, MasterDataModule, ParameterModule],
+  imports: [
+    CategoryModulModule,
+    RoleModule,
+    UserModule,
+    ModulModule,
+    MenuModule,
+    AccessModulModule,
+    AccessMenuModule,
+    MasterCategoryModule,
+    MasterDataModule,
+    ParameterModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

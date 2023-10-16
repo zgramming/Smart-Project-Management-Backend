@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { prefixSettingUrl } from 'src/utils/constant';
 
-@Controller('role')
+@Controller(`${prefixSettingUrl}/role`)
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
@@ -20,6 +30,11 @@ export class RoleController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.roleService.findOne(+id);
+  }
+
+  @Get('code/:code')
+  findByCode(@Param('code') code: string) {
+    return this.roleService.findByCode(code);
   }
 
   @Patch(':id')
