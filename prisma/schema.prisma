@@ -42,8 +42,8 @@ model Role {
   description String?
   status      ActiveStatusEnum @default(ACTIVE)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   User        User[]
   AccessModul AccessModul[]
@@ -53,18 +53,19 @@ model Role {
 }
 
 model User {
-  id       Int            @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
+  roleId Int  @map("role_id")
+  role   Role @relation(fields: [roleId], references: [id])
+
   name     String
   username String         @unique
   email    String?        @unique
   password String
   status   UserStatusEnum @default(ACTIVE)
 
-  roleId Int
-  role   Role @relation(fields: [roleId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
 }
@@ -76,9 +77,11 @@ model CategoryModul {
   description String?
   status      ActiveStatusEnum @default(ACTIVE)
   prefix      String           @unique
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  Modul       Modul[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Modul Modul[]
 
   @@map("category_moduls")
 }
@@ -86,7 +89,7 @@ model CategoryModul {
 model Modul {
   id Int @id @default(autoincrement())
 
-  categoryId    Int
+  categoryId    Int           @map("category_id")
   CategoryModul CategoryModul @relation(fields: [categoryId], references: [id])
 
   name        String
@@ -95,8 +98,8 @@ model Modul {
   status      ActiveStatusEnum @default(ACTIVE)
   prefix      String           @unique
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   Menu        Menu[]
   AccessModul AccessModul[]
@@ -108,10 +111,10 @@ model Modul {
 model Menu {
   id Int @id @default(autoincrement())
 
-  parentMenuId Int?
+  parentMenuId Int?  @map("parent_menu_id")
   ParentMenu   Menu? @relation("ParentMenu", fields: [parentMenuId], references: [id])
 
-  modulId Int
+  modulId Int   @map("modul_id")
   Modul   Modul @relation(fields: [modulId], references: [id])
 
   name        String
@@ -119,8 +122,9 @@ model Menu {
   description String?
   status      ActiveStatusEnum @default(ACTIVE)
   prefix      String           @unique
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   ChildrenMenu Menu[]       @relation("ParentMenu")
   AccessMenu   AccessMenu[]
@@ -131,14 +135,14 @@ model Menu {
 model AccessModul {
   id String @id @default(uuid())
 
-  roleId Int
+  roleId Int  @map("role_id")
   Role   Role @relation(fields: [roleId], references: [id])
 
-  modulId Int
+  modulId Int   @map("modul_id")
   Modul   Modul @relation(fields: [modulId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("access_moduls")
 }
@@ -146,19 +150,19 @@ model AccessModul {
 model AccessMenu {
   id String @id @default(uuid())
 
-  roleId Int
+  roleId Int  @map("role_id")
   Role   Role @relation(fields: [roleId], references: [id])
 
-  menuId Int
+  menuId Int  @map("menu_id")
   Menu   Menu @relation(fields: [menuId], references: [id])
 
-  modulId Int
+  modulId Int   @map("modul_id")
   Modul   Modul @relation(fields: [modulId], references: [id])
 
-  allowed_access AccessMenuAllowedEnum[]
+  allowedAccess AccessMenuAllowedEnum[] @map("allowed_access")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("access_menus")
 }
@@ -166,7 +170,7 @@ model AccessMenu {
 model MasterCategory {
   id Int @id @default(autoincrement())
 
-  parentMasterCategoryId Int?
+  parentMasterCategoryId Int?            @map("parent_master_category_id")
   ParentMasterCategory   MasterCategory? @relation("ParentMasterCategory", fields: [parentMasterCategoryId], references: [id])
 
   name        String
@@ -174,8 +178,8 @@ model MasterCategory {
   description String?
   status      ActiveStatusEnum @default(ACTIVE)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   MasterData             MasterData[]
   ChildrenMasterCategory MasterCategory[] @relation("ParentMasterCategory")
@@ -186,10 +190,10 @@ model MasterCategory {
 model MasterData {
   id Int @id @default(autoincrement())
 
-  parentMasterDataId Int?
+  parentMasterDataId Int?        @map("parent_master_data_id")
   ParentMasterData   MasterData? @relation("ParentMasterData", fields: [parentMasterDataId], references: [id])
 
-  masterCategoryId Int
+  masterCategoryId Int            @map("master_category_id")
   MasterCategory   MasterCategory @relation(fields: [masterCategoryId], references: [id])
 
   name             String
@@ -205,12 +209,27 @@ model MasterData {
   parameter4_key   String?
   parameter4_value String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   ChildrenMasterData MasterData[] @relation("ParentMasterData")
 
   @@map("master_data")
+}
+
+model Parameter {
+  id Int @id @default(autoincrement())
+
+  name        String
+  code        String           @unique
+  value       String
+  description String?
+  status      ActiveStatusEnum @default(ACTIVE)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("parameters")
 }
 
 //! Main Modul
