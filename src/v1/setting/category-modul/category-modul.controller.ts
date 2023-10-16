@@ -1,34 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { CategoryModulService } from './category-modul.service';
 import { CreateCategoryModulDto } from './dto/create-category-modul.dto';
 import { UpdateCategoryModulDto } from './dto/update-category-modul.dto';
+import { prefixSettingUrl } from 'src/utils/constant';
 
-@Controller('category-modul')
+@Controller(`${prefixSettingUrl}/category-modul`)
 export class CategoryModulController {
   constructor(private readonly categoryModulService: CategoryModulService) {}
 
   @Post()
-  create(@Body() createCategoryModulDto: CreateCategoryModulDto) {
+  async create(@Body() createCategoryModulDto: CreateCategoryModulDto) {
     return this.categoryModulService.create(createCategoryModulDto);
   }
 
   @Get()
-  findAll() {
-    return this.categoryModulService.findAll();
+  async findAll(@Query() query: any) {
+    const { limit = 100, page = 1 } = query;
+    return this.categoryModulService.findAll({
+      limit: Number(limit),
+      page: Number(page),
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.categoryModulService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoryModulDto: UpdateCategoryModulDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateCategoryModulDto: UpdateCategoryModulDto,
+  ) {
     return this.categoryModulService.update(+id, updateCategoryModulDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.categoryModulService.remove(+id);
   }
 }

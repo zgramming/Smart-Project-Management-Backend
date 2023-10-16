@@ -60,8 +60,6 @@ export class UserService {
         },
       });
 
-      console.log({ result });
-
       if (!result) {
         throw new NotFoundException({
           error: true,
