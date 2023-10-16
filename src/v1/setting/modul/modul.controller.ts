@@ -1,34 +1,56 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ModulService } from './modul.service';
 import { CreateModulDto } from './dto/create-modul.dto';
 import { UpdateModulDto } from './dto/update-modul.dto';
+import { prefixSettingUrl } from 'src/utils/constant';
 
-@Controller('modul')
+@Controller(`${prefixSettingUrl}/modul`)
 export class ModulController {
   constructor(private readonly modulService: ModulService) {}
 
   @Post()
-  create(@Body() createModulDto: CreateModulDto) {
+  async create(@Body() createModulDto: CreateModulDto) {
     return this.modulService.create(createModulDto);
   }
 
   @Get()
-  findAll() {
-    return this.modulService.findAll();
+  async findAll(@Query() query: any) {
+    const { page = 1, limit = 100 } = query;
+    return this.modulService.findAll({
+      page: Number(page),
+      limit: Number(limit),
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.modulService.findOne(+id);
   }
 
+  @Get('code/:code')
+  async findByCode(@Param('code') code: string) {
+    return this.modulService.findByCode(code);
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateModulDto: UpdateModulDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateModulDto: UpdateModulDto,
+  ) {
     return this.modulService.update(+id, updateModulDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.modulService.remove(+id);
   }
 }
