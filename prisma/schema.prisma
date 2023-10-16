@@ -1,0 +1,216 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum
+enum ActiveStatusEnum {
+  ACTIVE
+  INACTIVE
+}
+
+enum UserStatusEnum {
+  ACTIVE
+  INACTIVE
+  SUSPEND
+}
+
+enum AccessMenuAllowedEnum {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  PRINT
+  EXPORT
+  IMPORT
+  APPROVE
+}
+
+//! Setting Modul
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        String
+  code        String           @unique
+  description String?
+  status      ActiveStatusEnum @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User        User[]
+  AccessModul AccessModul[]
+  AccessMenu  AccessMenu[]
+
+  @@map("roles")
+}
+
+model User {
+  id       Int            @id @default(autoincrement())
+  name     String
+  username String         @unique
+  email    String?        @unique
+  password String
+  status   UserStatusEnum @default(ACTIVE)
+
+  roleId Int
+  role   Role @relation(fields: [roleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model CategoryModul {
+  id          Int              @id @default(autoincrement())
+  name        String
+  code        String           @unique
+  description String?
+  status      ActiveStatusEnum @default(ACTIVE)
+  prefix      String           @unique
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  Modul       Modul[]
+
+  @@map("category_moduls")
+}
+
+model Modul {
+  id Int @id @default(autoincrement())
+
+  categoryId    Int
+  CategoryModul CategoryModul @relation(fields: [categoryId], references: [id])
+
+  name        String
+  code        String           @unique
+  description String?
+  status      ActiveStatusEnum @default(ACTIVE)
+  prefix      String           @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Menu        Menu[]
+  AccessModul AccessModul[]
+  AccessMenu  AccessMenu[]
+
+  @@map("moduls")
+}
+
+model Menu {
+  id Int @id @default(autoincrement())
+
+  parentMenuId Int?
+  ParentMenu   Menu? @relation("ParentMenu", fields: [parentMenuId], references: [id])
+
+  modulId Int
+  Modul   Modul @relation(fields: [modulId], references: [id])
+
+  name        String
+  code        String           @unique
+  description String?
+  status      ActiveStatusEnum @default(ACTIVE)
+  prefix      String           @unique
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  ChildrenMenu Menu[]       @relation("ParentMenu")
+  AccessMenu   AccessMenu[]
+
+  @@map("menus")
+}
+
+model AccessModul {
+  id String @id @default(uuid())
+
+  roleId Int
+  Role   Role @relation(fields: [roleId], references: [id])
+
+  modulId Int
+  Modul   Modul @relation(fields: [modulId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("access_moduls")
+}
+
+model AccessMenu {
+  id String @id @default(uuid())
+
+  roleId Int
+  Role   Role @relation(fields: [roleId], references: [id])
+
+  menuId Int
+  Menu   Menu @relation(fields: [menuId], references: [id])
+
+  modulId Int
+  Modul   Modul @relation(fields: [modulId], references: [id])
+
+  allowed_access AccessMenuAllowedEnum[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("access_menus")
+}
+
+model MasterCategory {
+  id Int @id @default(autoincrement())
+
+  parentMasterCategoryId Int?
+  ParentMasterCategory   MasterCategory? @relation("ParentMasterCategory", fields: [parentMasterCategoryId], references: [id])
+
+  name        String
+  code        String           @unique
+  description String?
+  status      ActiveStatusEnum @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  MasterData             MasterData[]
+  ChildrenMasterCategory MasterCategory[] @relation("ParentMasterCategory")
+
+  @@map("master_category")
+}
+
+model MasterData {
+  id Int @id @default(autoincrement())
+
+  parentMasterDataId Int?
+  ParentMasterData   MasterData? @relation("ParentMasterData", fields: [parentMasterDataId], references: [id])
+
+  masterCategoryId Int
+  MasterCategory   MasterCategory @relation(fields: [masterCategoryId], references: [id])
+
+  name             String
+  code             String           @unique
+  description      String?
+  status           ActiveStatusEnum @default(ACTIVE)
+  parameter1_key   String?
+  parameter1_value String?
+  parameter2_key   String?
+  parameter2_value String?
+  parameter3_key   String?
+  parameter3_value String?
+  parameter4_key   String?
+  parameter4_value String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ChildrenMasterData MasterData[] @relation("ParentMasterData")
+
+  @@map("master_data")
+}
+
+//! Main Modul
