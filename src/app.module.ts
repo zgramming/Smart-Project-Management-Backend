@@ -9,9 +9,20 @@ import { AccessMenuModule } from './v1/setting/access-menu/access-menu.module';
 import { MasterCategoryModule } from './v1/setting/master-category/master-category.module';
 import { MasterDataModule } from './v1/setting/master-data/master-data.module';
 import { ParameterModule } from './v1/setting/parameter/parameter.module';
+import { AuthModule } from './v1/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import envConfiguration from './config/env_configuration';
 
 @Module({
   imports: [
+    // Env config
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+      load: [envConfiguration],
+    }),
+
+    // V1 Module
     CategoryModulModule,
     RoleModule,
     UserModule,
@@ -22,6 +33,7 @@ import { ParameterModule } from './v1/setting/parameter/parameter.module';
     MasterCategoryModule,
     MasterDataModule,
     ParameterModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
