@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { MasterCategoryService } from './master-category.service';
 import { CreateMasterCategoryDto } from './dto/create-master-category.dto';
 import { UpdateMasterCategoryDto } from './dto/update-master-category.dto';
+import { prefixSettingUrl } from 'src/utils/constant';
 
-@Controller('master-category')
+@Controller(`${prefixSettingUrl}/master-category`)
 export class MasterCategoryController {
   constructor(private readonly masterCategoryService: MasterCategoryService) {}
 
@@ -13,8 +23,12 @@ export class MasterCategoryController {
   }
 
   @Get()
-  findAll() {
-    return this.masterCategoryService.findAll();
+  findAll(@Query() query: any) {
+    const { limit = 100, page = 1 } = query;
+    return this.masterCategoryService.findAll({
+      limit: Number(limit),
+      page: Number(page),
+    });
   }
 
   @Get(':id')
@@ -22,8 +36,16 @@ export class MasterCategoryController {
     return this.masterCategoryService.findOne(+id);
   }
 
+  @Get('code/:code')
+  findByCode(@Param('code') code: string) {
+    return this.masterCategoryService.findByCode(code);
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMasterCategoryDto: UpdateMasterCategoryDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMasterCategoryDto: UpdateMasterCategoryDto,
+  ) {
     return this.masterCategoryService.update(+id, updateMasterCategoryDto);
   }
 
