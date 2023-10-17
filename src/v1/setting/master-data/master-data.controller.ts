@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { MasterDataService } from './master-data.service';
 import { CreateMasterDatumDto } from './dto/create-master-datum.dto';
 import { UpdateMasterDatumDto } from './dto/update-master-datum.dto';
+import { prefixSettingUrl } from 'src/utils/constant';
 
-@Controller('master-data')
+@Controller(`${prefixSettingUrl}/master-data`)
 export class MasterDataController {
   constructor(private readonly masterDataService: MasterDataService) {}
 
@@ -13,8 +23,12 @@ export class MasterDataController {
   }
 
   @Get()
-  findAll() {
-    return this.masterDataService.findAll();
+  findAll(@Query() query: any) {
+    const { limit = 100, page = 1 } = query;
+    return this.masterDataService.findAll({
+      limit: Number(limit),
+      page: Number(page),
+    });
   }
 
   @Get(':id')
@@ -22,8 +36,16 @@ export class MasterDataController {
     return this.masterDataService.findOne(+id);
   }
 
+  @Get('master-category/code/:code')
+  findByMasterCategoryCode(@Param('code') code: string) {
+    return this.masterDataService.findByMasterCategoryCode(code);
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMasterDatumDto: UpdateMasterDatumDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMasterDatumDto: UpdateMasterDatumDto,
+  ) {
     return this.masterDataService.update(+id, updateMasterDatumDto);
   }
 
