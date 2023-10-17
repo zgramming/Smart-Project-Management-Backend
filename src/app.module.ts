@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { CategoryModulModule } from './v1/setting/category-modul/category-modul.module';
 import { RoleModule } from './v1/setting/role/role.module';
 import { UserModule } from './v1/setting/user/user.module';
@@ -25,7 +23,5 @@ import { ParameterModule } from './v1/setting/parameter/parameter.module';
     MasterDataModule,
     ParameterModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
