@@ -1,9 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { AccessMenuService } from './access-menu.service';
 import { CreateAccessMenuDto } from './dto/create-access-menu.dto';
-import { UpdateAccessMenuDto } from './dto/update-access-menu.dto';
+import { prefixSettingUrl } from 'src/utils/constant';
 
-@Controller('access-menu')
+@Controller(`${prefixSettingUrl}/access-menu`)
 export class AccessMenuController {
   constructor(private readonly accessMenuService: AccessMenuService) {}
 
@@ -17,18 +24,8 @@ export class AccessMenuController {
     return this.accessMenuService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.accessMenuService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAccessMenuDto: UpdateAccessMenuDto) {
-    return this.accessMenuService.update(+id, updateAccessMenuDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.accessMenuService.remove(+id);
+  @Get('role/:roleId')
+  findByRoleId(@Param('roleId', ParseIntPipe) roleId: number) {
+    return this.accessMenuService.findByRoleId(+roleId);
   }
 }

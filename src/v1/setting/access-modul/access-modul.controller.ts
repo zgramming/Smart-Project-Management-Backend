@@ -4,8 +4,6 @@ import {
   Post,
   Body,
   Param,
-  ParseUUIDPipe,
-  Delete,
   ParseIntPipe,
 } from '@nestjs/common';
 import { AccessModulService } from './access-modul.service';
@@ -26,23 +24,8 @@ export class AccessModulController {
     return this.accessModulService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.accessModulService.findOne(id);
-  }
-
   @Get('role/:roleId')
   findByRole(@Param('roleId', ParseIntPipe) roleId: number) {
     return this.accessModulService.findByRoleId(roleId);
-  }
-
-  @Delete('role/:roleId')
-  deleteByRole(@Param('roleId', ParseIntPipe) roleId: number) {
-    return this.accessModulService.removeByRoleId(roleId);
-  }
-
-  @Delete()
-  deleteAll() {
-    return this.accessModulService.removeAll();
   }
 }

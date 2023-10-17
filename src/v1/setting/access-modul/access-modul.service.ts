@@ -60,28 +60,6 @@ export class AccessModulService {
     }
   }
 
-  async findOne(id: string) {
-    try {
-      const result = await this.prisma.accessModul.findUnique({
-        where: {
-          id,
-        },
-        include: {
-          Modul: true,
-          Role: true,
-        },
-      });
-
-      return {
-        error: false,
-        message: 'Access Modul Retrieved Successfully',
-        data: result,
-      };
-    } catch (error) {
-      return handlingCustomError(error);
-    }
-  }
-
   async findByRoleId(roleId: number) {
     try {
       const result = await this.prisma.accessModul.findMany({
@@ -97,38 +75,6 @@ export class AccessModulService {
       return {
         error: false,
         message: 'Access Modul Retrieved Successfully',
-        data: result,
-      };
-    } catch (error) {
-      return handlingCustomError(error);
-    }
-  }
-
-  async removeByRoleId(roleId: number) {
-    try {
-      const result = await this.prisma.accessModul.deleteMany({
-        where: {
-          roleId,
-        },
-      });
-
-      return {
-        error: false,
-        message: 'Access Modul Deleted Successfully',
-        data: result,
-      };
-    } catch (error) {
-      return handlingCustomError(error);
-    }
-  }
-
-  async removeAll() {
-    try {
-      const result = await this.prisma.accessModul.deleteMany({});
-
-      return {
-        error: false,
-        message: 'Access Modul Deleted Successfully',
         data: result,
       };
     } catch (error) {
