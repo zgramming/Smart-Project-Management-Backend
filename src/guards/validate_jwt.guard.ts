@@ -28,8 +28,6 @@ export class ValidateJWTGuard implements CanActivate {
       });
 
       // Sub is user id
-      console.log({ payload });
-
       request['user'] = payload;
 
       return true;
