@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ParameterService } from './parameter.service';
 import { CreateParameterDto } from './dto/create-parameter.dto';
 import { UpdateParameterDto } from './dto/update-parameter.dto';
+import { prefixSettingUrl } from 'src/utils/constant';
 
-@Controller('parameter')
+@Controller(`${prefixSettingUrl}/parameter`)
 export class ParameterController {
   constructor(private readonly parameterService: ParameterService) {}
 
@@ -13,8 +23,12 @@ export class ParameterController {
   }
 
   @Get()
-  findAll() {
-    return this.parameterService.findAll();
+  findAll(@Query() query: any) {
+    const { limit = 100, page = 1 } = query;
+    return this.parameterService.findAll({
+      limit: Number(limit),
+      page: Number(page),
+    });
   }
 
   @Get(':id')
@@ -22,8 +36,16 @@ export class ParameterController {
     return this.parameterService.findOne(+id);
   }
 
+  @Get('code/:code')
+  findByCode(@Param('code') code: string) {
+    return this.parameterService.findByCode(code);
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateParameterDto: UpdateParameterDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateParameterDto: UpdateParameterDto,
+  ) {
     return this.parameterService.update(+id, updateParameterDto);
   }
 
