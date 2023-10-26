@@ -67,6 +67,9 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  ProjectMember        ProjectMember[]
+  ProjectMeetingMember ProjectMeetingMember[]
+
   @@map("users")
 }
 
@@ -234,3 +237,132 @@ model Parameter {
 }
 
 //! Main Modul
+
+enum DegreeOfDifficultyEnum {
+  EASY
+  MEDIUM
+  HARD
+  VERY_HARD
+}
+
+enum MeetingMethodEnum {
+  ONLINE
+  OFFLINE
+}
+
+enum ProjectStatusEnum {
+  ACTIVE
+  INACTIVE
+  SUSPEND
+  FINISH
+}
+
+model Project {
+  id Int @id @default(autoincrement())
+
+  name      String
+  code      String            @unique
+  startDate DateTime          @map("start_date")
+  endDate   DateTime          @map("end_date")
+  status    ProjectStatusEnum @default(ACTIVE)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  ProjectMember   ProjectMember[]
+  ProjectDocument ProjectDocument[]
+  ProjectMeeting  ProjectMeeting[]
+  ProjectTask     ProjectTask[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  id String @id @default(uuid())
+
+  projectId Int     @map("project_id")
+  Project   Project @relation(fields: [projectId], references: [id])
+
+  userId Int  @map("user_id")
+  User   User @relation(fields: [userId], references: [id])
+
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("project_members")
+}
+
+model ProjectDocument {
+  id String @id @default(uuid())
+
+  projectId Int     @map("project_id")
+  Project   Project @relation(fields: [projectId], references: [id])
+
+  file        String
+  name        String
+  description String?
+  status      ActiveStatusEnum @default(ACTIVE)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("project_documents")
+}
+
+model ProjectMeeting {
+  id String @id @default(uuid())
+
+  projectId Int     @map("project_id")
+  Project   Project @relation(fields: [projectId], references: [id])
+
+  name        String
+  description String?
+  startDate   DateTime          @map("start_date")
+  endDate     DateTime          @map("end_date")
+  method      MeetingMethodEnum @default(ONLINE)
+  link        String?
+  status      ActiveStatusEnum  @default(ACTIVE)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  ProjectMeetingMember ProjectMeetingMember[]
+
+  @@map("project_meetings")
+}
+
+model ProjectMeetingMember {
+  id String @id @default(uuid())
+
+  projectMeetingId String         @map("project_meeting_id")
+  ProjectMeeting   ProjectMeeting @relation(fields: [projectMeetingId], references: [id])
+
+  userId Int  @map("user_id")
+  User   User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("project_meeting_members")
+}
+
+model ProjectTask {
+  id String @id @default(uuid())
+
+  projectId Int     @map("project_id")
+  Project   Project @relation(fields: [projectId], references: [id])
+
+  name               String
+  description        String?
+  startDate          DateTime               @map("start_date")
+  endDate            DateTime               @map("end_date")
+  degreeOfDifficulty DegreeOfDifficultyEnum @default(EASY) @map("degree_of_difficulty")
+  status             ActiveStatusEnum       @default(ACTIVE)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("project_tasks")
+}
