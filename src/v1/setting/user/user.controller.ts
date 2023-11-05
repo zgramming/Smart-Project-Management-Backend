@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
+import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
 
+@UseGuards(ValidateJWTGuard)
 @Controller(`${prefixSettingUrl}/user`)
 export class UserController {
   constructor(private readonly userService: UserService) {}

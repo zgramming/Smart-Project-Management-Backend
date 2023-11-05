@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
+import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
 
+@UseGuards(ValidateJWTGuard)
 @Controller(`${prefixSettingUrl}/menu`)
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}

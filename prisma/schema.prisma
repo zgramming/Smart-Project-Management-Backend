@@ -260,10 +260,13 @@ enum ProjectStatusEnum {
 model Project {
   id Int @id @default(autoincrement())
 
+  clientId      String        @map("client_id")
+  ProjectClient ProjectClient @relation(fields: [clientId], references: [id])
+
   name      String
   code      String            @unique
-  startDate DateTime          @map("start_date")
-  endDate   DateTime          @map("end_date")
+  startDate DateTime          @map("start_date") @db.Date()
+  endDate   DateTime          @map("end_date") @db.Date()
   status    ProjectStatusEnum @default(ACTIVE)
 
   createdAt DateTime  @default(now()) @map("created_at")
@@ -276,6 +279,22 @@ model Project {
   ProjectTask     ProjectTask[]
 
   @@map("projects")
+}
+
+model ProjectClient {
+  id String @id @default(uuid())
+
+  name        String
+  code        String  @unique
+  description String?
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  Project Project[]
+
+  @@map("project_clients")
 }
 
 model ProjectMember {

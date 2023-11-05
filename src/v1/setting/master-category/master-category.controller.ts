@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { MasterCategoryService } from './master-category.service';
 import { CreateMasterCategoryDto } from './dto/create-master-category.dto';
 import { UpdateMasterCategoryDto } from './dto/update-master-category.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
+import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
 
+@UseGuards(ValidateJWTGuard)
 @Controller(`${prefixSettingUrl}/master-category`)
 export class MasterCategoryController {
   constructor(private readonly masterCategoryService: MasterCategoryService) {}

@@ -13,7 +13,9 @@ import { AuthModule } from './v1/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './utils/constant';
+import { ProjectModule } from './v1/project/project/project.module';
 import envConfiguration from './config/env_configuration';
+import { ProjectClientModule } from './v1/project/client/project_client.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import envConfiguration from './config/env_configuration';
     MasterDataModule,
     ParameterModule,
     AuthModule,
+    ProjectModule,
+    ProjectClientModule,
   ],
 })
 export class AppModule {}
