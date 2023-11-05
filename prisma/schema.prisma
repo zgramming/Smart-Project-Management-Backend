@@ -306,7 +306,8 @@ model ProjectMember {
   userId Int  @map("user_id")
   User   User @relation(fields: [userId], references: [id])
 
-  status    String   @default("ACTIVE")
+  status ActiveStatusEnum @default(ACTIVE)
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

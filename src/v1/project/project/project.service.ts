@@ -10,11 +10,26 @@ export class ProjectService {
   constructor(private readonly prismaService: PrismaService) {}
   async create(createProjectDto: CreateProjectDto) {
     try {
+      console.log({
+        dbody: createProjectDto,
+      });
+
+      const members = createProjectDto.members.map((value) => ({
+        userId: value.userId,
+      }));
       const result = await this.prismaService.project.create({
         data: {
-          ...createProjectDto,
+          clientId: createProjectDto.clientId,
+          name: createProjectDto.name,
+          code: createProjectDto.code,
+          status: createProjectDto.status,
           startDate: new Date(createProjectDto.startDate),
           endDate: new Date(createProjectDto.endDate),
+          ProjectMember: {
+            createMany: {
+              data: members,
+            },
+          },
         },
       });
 
@@ -37,6 +52,13 @@ export class ProjectService {
       const result = await this.prismaService.project.findMany({
         take: limit,
         skip: offset,
+        include: {
+          ProjectMember: {
+            include: {
+              User: { select: { id: true, name: true } },
+            },
+          },
+        },
       });
 
       return {
@@ -53,6 +75,13 @@ export class ProjectService {
     try {
       const result = await this.prismaService.project.findUnique({
         where: { id: id },
+        include: {
+          ProjectMember: {
+            include: {
+              User: { select: { id: true, name: true } },
+            },
+          },
+        },
       });
 
       return {
@@ -69,6 +98,13 @@ export class ProjectService {
     try {
       const result = await this.prismaService.project.findUnique({
         where: { code: code },
+        include: {
+          ProjectMember: {
+            include: {
+              User: { select: { id: true, name: true } },
+            },
+          },
+        },
       });
 
       return {
@@ -83,24 +119,46 @@ export class ProjectService {
 
   async update(id: number, updateProjectDto: UpdateProjectDto) {
     try {
-      const project = await this.prismaService.project.findUnique({
-        where: { id: id },
-      });
-
-      if (!project) {
-        throw new NotFoundException({
-          error: true,
-          message: `Project with id ${id} not found`,
+      const result = await this.prismaService.$transaction(async (trx) => {
+        const project = await trx.project.findUnique({
+          where: { id: id },
         });
-      }
 
-      const result = await this.prismaService.project.update({
-        where: { id: id },
-        data: {
-          ...updateProjectDto,
-          startDate: new Date(updateProjectDto.startDate),
-          endDate: new Date(updateProjectDto.endDate),
-        },
+        if (!project) {
+          throw new NotFoundException({
+            error: true,
+            message: `Project with id ${id} not found`,
+          });
+        }
+
+        // Update Project
+        const update = await trx.project.update({
+          where: { id: id },
+          data: {
+            clientId: updateProjectDto.clientId,
+            name: updateProjectDto.name,
+            code: updateProjectDto.code,
+            status: updateProjectDto.status,
+            startDate: new Date(updateProjectDto.startDate),
+            endDate: new Date(updateProjectDto.endDate),
+          },
+        });
+
+        // Update ProjectMember
+        await trx.projectMember.deleteMany({
+          where: { projectId: project.id },
+        });
+
+        // Create New ProjectMember
+        await trx.projectMember.createMany({
+          data: updateProjectDto.members.map((value) => ({
+            projectId: id,
+            userId: value.userId,
+            status: value.status,
+          })),
+        });
+
+        return update;
       });
 
       return {

@@ -8,12 +8,15 @@ import {
   Delete,
   Query,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { ProjectClientService } from './project_client.service';
 import { CreateProjectClientDto } from './dto/create-project_client.dto';
 import { UpdateProjectClientDto } from './dto/update-project_client.dto';
 import { prefixProjectClientUrl } from 'src/utils/constant';
+import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
 
+@UseGuards(ValidateJWTGuard)
 @Controller(`${prefixProjectClientUrl}`)
 export class ProjectClientController {
   constructor(private readonly projectClientService: ProjectClientService) {}

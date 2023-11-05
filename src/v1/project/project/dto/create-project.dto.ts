@@ -1,5 +1,22 @@
-import { ProjectStatusEnum } from '@prisma/client';
-import { IsDateString, IsString } from 'class-validator';
+import { ActiveStatusEnum, ProjectStatusEnum } from '@prisma/client';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsDateString,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+
+class ProjectMember {
+  @IsNumber()
+  projectId: number;
+
+  @IsNumber()
+  userId: number;
+
+  status?: ActiveStatusEnum;
+}
 
 export class CreateProjectDto {
   @IsString()
@@ -18,4 +35,11 @@ export class CreateProjectDto {
   endDate: Date;
 
   status?: ProjectStatusEnum;
+
+  @IsArray({ message: `Project Member must be an array` })
+  @ValidateNested({
+    each: true,
+  })
+  @Type(() => ProjectMember)
+  members: ProjectMember[];
 }

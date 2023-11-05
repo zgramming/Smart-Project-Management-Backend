@@ -16,6 +16,8 @@ import { jwtConstants } from './utils/constant';
 import { ProjectModule } from './v1/project/project/project.module';
 import envConfiguration from './config/env_configuration';
 import { ProjectClientModule } from './v1/project/client/project_client.module';
+import { ProjectMemberModule } from './v1/project/member/project-member.module';
+import { ProjectDocumentModule } from './v1/project/document/project-document.module';
 
 @Module({
   imports: [
@@ -46,6 +48,8 @@ import { ProjectClientModule } from './v1/project/client/project_client.module';
     AuthModule,
     ProjectModule,
     ProjectClientModule,
+    ProjectMemberModule,
+    ProjectDocumentModule,
   ],
 })
 export class AppModule {}
