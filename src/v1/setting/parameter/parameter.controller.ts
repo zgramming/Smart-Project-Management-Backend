@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ParameterService } from './parameter.service';
 import { CreateParameterDto } from './dto/create-parameter.dto';
 import { UpdateParameterDto } from './dto/update-parameter.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
+import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
 
+@UseGuards(ValidateJWTGuard)
 @Controller(`${prefixSettingUrl}/parameter`)
 export class ParameterController {
   constructor(private readonly parameterService: ParameterService) {}

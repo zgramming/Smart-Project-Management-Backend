@@ -11,6 +11,7 @@ import { jwtConstants } from 'src/utils/constant';
 @Injectable()
 export class ValidateJWTGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
+
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
@@ -32,9 +33,17 @@ export class ValidateJWTGuard implements CanActivate {
 
       return true;
     } catch (error) {
+      let message = 'Token is invalid';
+
+      if (error.name === 'TokenExpiredError') {
+        message = 'Token is expired';
+      }
+
       throw new UnauthorizedException({
         error: true,
-        message: 'Token is invalid',
+        message: message,
+        detail: error,
+        stacktrace: error.stack,
       });
     }
   }

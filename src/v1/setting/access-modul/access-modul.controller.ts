@@ -5,11 +5,14 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { AccessModulService } from './access-modul.service';
 import { CreateAccessModulDto } from './dto/create-access-modul.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
+import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
 
+@UseGuards(ValidateJWTGuard)
 @Controller(`${prefixSettingUrl}/access-modul`)
 export class AccessModulController {
   constructor(private readonly accessModulService: AccessModulService) {}

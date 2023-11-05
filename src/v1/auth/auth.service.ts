@@ -47,7 +47,9 @@ export class AuthService {
         sub: userByUsername.id,
       };
 
-      const token = await this.jwtService.signAsync(payload);
+      const token = await this.jwtService.signAsync(payload, {
+        expiresIn: '1d',
+      });
 
       return {
         error: false,

@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ModulService } from './modul.service';
 import { CreateModulDto } from './dto/create-modul.dto';
 import { UpdateModulDto } from './dto/update-modul.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
+import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
 
+@UseGuards(ValidateJWTGuard)
 @Controller(`${prefixSettingUrl}/modul`)
 export class ModulController {
   constructor(private readonly modulService: ModulService) {}

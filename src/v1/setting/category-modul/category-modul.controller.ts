@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoryModulService } from './category-modul.service';
 import { CreateCategoryModulDto } from './dto/create-category-modul.dto';
 import { UpdateCategoryModulDto } from './dto/update-category-modul.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
+import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
 
+@UseGuards(ValidateJWTGuard)
 @Controller(`${prefixSettingUrl}/category-modul`)
 export class CategoryModulController {
   constructor(private readonly categoryModulService: CategoryModulService) {}
