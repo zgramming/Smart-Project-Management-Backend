@@ -11,6 +11,8 @@ import { MasterDataModule } from './v1/setting/master-data/master-data.module';
 import { ParameterModule } from './v1/setting/parameter/parameter.module';
 import { AuthModule } from './v1/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './utils/constant';
 import envConfiguration from './config/env_configuration';
 
 @Module({
@@ -20,6 +22,12 @@ import envConfiguration from './config/env_configuration';
       envFilePath: '.env',
       isGlobal: true,
       load: [envConfiguration],
+    }),
+
+    JwtModule.register({
+      global: true,
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '1d' },
     }),
 
     // V1 Module
