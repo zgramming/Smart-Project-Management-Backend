@@ -22,6 +22,7 @@ export class AccessModulService {
         const data = createAccessModulDto.values.map((item) => ({
           roleId: item.roleId,
           modulId: item.modulId,
+          categoryModulId: item.categoryModulId,
         }));
 
         const result = await trx.accessModul.createMany({

@@ -15,6 +15,10 @@ class TypeValues {
   @IsInt()
   @IsNotEmpty()
   modulId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  categoryModulId: number;
 }
 
 export class CreateAccessModulDto {

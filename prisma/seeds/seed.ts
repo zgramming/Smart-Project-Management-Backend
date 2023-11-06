@@ -1,6 +1,10 @@
 import { AccessMenuAllowedEnum, PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
+type SeederType = {
+  onlyTruncate?: boolean;
+};
+
 const encryptPassword = async (password: string) => {
   const saltRound = 10;
   const salt = await bcrypt.genSalt(saltRound);
@@ -25,9 +29,13 @@ const IDModul = {
   SETTING: 4,
 };
 
-const roleSeeder = async () => {
+const roleSeeder = async ({ onlyTruncate = false }: SeederType) => {
   // Delete all data
   await prisma.role.deleteMany();
+
+  if (onlyTruncate) {
+    return;
+  }
 
   const result = await prisma.role.createMany({
     data: [
@@ -60,9 +68,13 @@ const roleSeeder = async () => {
   });
 };
 
-const userSeeder = async () => {
+const userSeeder = async ({ onlyTruncate = false }: SeederType) => {
   // Delete all data
   await prisma.user.deleteMany();
+
+  if (onlyTruncate) {
+    return;
+  }
 
   const result = await prisma.user.createMany({
     data: [
@@ -109,9 +121,13 @@ const userSeeder = async () => {
   });
 };
 
-const categoryModulSeeder = async () => {
+const categoryModulSeeder = async ({ onlyTruncate = false }: SeederType) => {
   // Delete all data
   await prisma.categoryModul.deleteMany();
+
+  if (onlyTruncate) {
+    return;
+  }
 
   const result = await prisma.categoryModul.createMany({
     data: [
@@ -135,9 +151,13 @@ const categoryModulSeeder = async () => {
   });
 };
 
-const modulSeeder = async () => {
+const modulSeeder = async ({ onlyTruncate = false }: SeederType) => {
   // Delete all data
   await prisma.modul.deleteMany();
+
+  if (onlyTruncate) {
+    return;
+  }
 
   const result = await prisma.modul.createMany({
     data: [
@@ -177,9 +197,13 @@ const modulSeeder = async () => {
   });
 };
 
-const menuSeeder = async () => {
+const menuSeeder = async ({ onlyTruncate = false }: SeederType) => {
   // Delete all data
   await prisma.menu.deleteMany();
+
+  if (onlyTruncate) {
+    return;
+  }
 
   const result = await prisma.menu.createMany({
     data: [
@@ -346,9 +370,15 @@ const menuSeeder = async () => {
   });
 };
 
-const accessCategoryModulSeeder = async () => {
+const accessCategoryModulSeeder = async ({
+  onlyTruncate = false,
+}: SeederType) => {
   // Delete all data
   await prisma.accessCategoryModul.deleteMany();
+
+  if (onlyTruncate) {
+    return;
+  }
 
   const categoryModuls = await prisma.categoryModul.findMany();
   const result = await prisma.accessCategoryModul.createMany({
@@ -386,16 +416,24 @@ const accessCategoryModulSeeder = async () => {
   });
 };
 
-const accessModulSeeder = async () => {
+const accessModulSeeder = async ({ onlyTruncate = false }: SeederType) => {
   // Delete all data
   await prisma.accessModul.deleteMany();
+
+  if (onlyTruncate) {
+    return;
+  }
 
   const modul = await prisma.modul.findMany();
 
   const result = await prisma.accessModul.createMany({
     data: [
       // Super Admin
-      ...modul.map((item) => ({ modulId: item.id, roleId: IDRole.SUPERADMIN })),
+      ...modul.map((item) => ({
+        modulId: item.id,
+        roleId: IDRole.SUPERADMIN,
+        categoryModulId: item.categoryModulId,
+      })),
 
       // Admin
       ...modul
@@ -403,6 +441,7 @@ const accessModulSeeder = async () => {
         .map((item) => ({
           modulId: item.id,
           roleId: IDRole.ADMIN,
+          categoryModulId: item.categoryModulId,
         })),
 
       // Developer
@@ -411,6 +450,7 @@ const accessModulSeeder = async () => {
         .map((item) => ({
           modulId: item.id,
           roleId: IDRole.DEVELOPER,
+          categoryModulId: item.categoryModulId,
         })),
 
       // Proyek Manager
@@ -419,6 +459,7 @@ const accessModulSeeder = async () => {
         .map((item) => ({
           modulId: item.id,
           roleId: IDRole.PROYEK_MANAGER,
+          categoryModulId: item.categoryModulId,
         })),
 
       // Owner
@@ -427,6 +468,7 @@ const accessModulSeeder = async () => {
         .map((item) => ({
           modulId: item.id,
           roleId: IDRole.OWNER,
+          categoryModulId: item.categoryModulId,
         })),
     ],
   });
@@ -436,9 +478,13 @@ const accessModulSeeder = async () => {
   });
 };
 
-const accessMenuSeeder = async () => {
+const accessMenuSeeder = async ({ onlyTruncate = false }: SeederType) => {
   // Delete all data
   await prisma.accessMenu.deleteMany();
+
+  if (onlyTruncate) {
+    return;
+  }
 
   const menus = await prisma.menu.findMany();
 
@@ -473,14 +519,30 @@ const accessMenuSeeder = async () => {
 const main = async () => {
   try {
     // Execute seeders
-    await roleSeeder();
-    await userSeeder();
-    await categoryModulSeeder();
-    await modulSeeder();
-    await menuSeeder();
-    await accessCategoryModulSeeder();
-    await accessModulSeeder();
-    await accessMenuSeeder();
+    await roleSeeder({
+      onlyTruncate: false,
+    });
+    await userSeeder({
+      onlyTruncate: false,
+    });
+    await categoryModulSeeder({
+      onlyTruncate: false,
+    });
+    await modulSeeder({
+      onlyTruncate: false,
+    });
+    await menuSeeder({
+      onlyTruncate: false,
+    });
+    await accessCategoryModulSeeder({
+      onlyTruncate: false,
+    });
+    await accessModulSeeder({
+      onlyTruncate: false,
+    });
+    await accessMenuSeeder({
+      onlyTruncate: false,
+    });
   } catch (error) {
     console.log({
       error,

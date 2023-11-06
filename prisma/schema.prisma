@@ -57,7 +57,7 @@ model User {
   id Int @id @default(autoincrement())
 
   roleId Int  @map("role_id")
-  role   Role @relation(fields: [roleId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   name     String
   username String         @unique
@@ -88,6 +88,7 @@ model CategoryModul {
 
   Modul               Modul[]
   AccessCategoryModul AccessCategoryModul[]
+  AccessModul         AccessModul[]
 
   @@map("category_moduls")
 }
@@ -155,6 +156,9 @@ model AccessCategoryModul {
 
 model AccessModul {
   id String @id @default(uuid())
+
+  categoryModulId Int           @map("category_modul_id")
+  CategoryModul   CategoryModul @relation(fields: [categoryModulId], references: [id], onDelete: Cascade)
 
   roleId Int  @map("role_id")
   Role   Role @relation(fields: [roleId], references: [id])
