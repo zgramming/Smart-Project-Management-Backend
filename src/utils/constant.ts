@@ -4,6 +4,7 @@ export const prefixProjectUrl = `${prefixUrl}/project`;
 export const prefixProjectClientUrl = `${prefixUrl}/project-client`;
 export const prefixProjectMemberUrl = `${prefixUrl}/project-member`;
 export const prefixProjectDocumentUrl = `${prefixUrl}/project-document`;
+export const prefixProjectMeetingUrl = `${prefixUrl}/project-meeting`;
 
 export const pathUploadDocument = 'uploads/document';
 

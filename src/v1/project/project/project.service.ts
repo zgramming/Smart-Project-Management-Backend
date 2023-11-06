@@ -10,10 +10,6 @@ export class ProjectService {
   constructor(private readonly prismaService: PrismaService) {}
   async create(createProjectDto: CreateProjectDto) {
     try {
-      console.log({
-        dbody: createProjectDto,
-      });
-
       const members = createProjectDto.members.map((value) => ({
         userId: value.userId,
       }));

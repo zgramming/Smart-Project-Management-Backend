@@ -39,7 +39,7 @@ export const generateRandomNameFile = (file: Express.Multer.File) => {
   return `${randomName}.${ext}`;
 };
 
-export const handlingFileUpload = (
+export const uploadFile = (
   file: Express.Multer.File,
   directory: string,
   options?: UploadFileOptions,

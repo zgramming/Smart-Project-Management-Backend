@@ -18,6 +18,7 @@ import envConfiguration from './config/env_configuration';
 import { ProjectClientModule } from './v1/project/client/project_client.module';
 import { ProjectMemberModule } from './v1/project/member/project-member.module';
 import { ProjectDocumentModule } from './v1/project/document/project-document.module';
+import { ProjectMeetingModule } from './v1/project/meeting/project-meeting.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { ProjectDocumentModule } from './v1/project/document/project-document.mo
     ProjectClientModule,
     ProjectMemberModule,
     ProjectDocumentModule,
+    ProjectMeetingModule,
   ],
 })
 export class AppModule {}

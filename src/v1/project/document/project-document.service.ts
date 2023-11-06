@@ -4,8 +4,8 @@ import { UpdateProjectDocumentDto } from './dto/update-project-document.dto';
 import { PrismaService } from 'src/prisma.service';
 import {
   handlingCustomError,
-  handlingFileUpload,
   removeFileUpload,
+  uploadFile,
 } from 'src/utils/function';
 import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
 import { pathUploadDocument } from 'src/utils/constant';
@@ -30,7 +30,7 @@ export class ProjectDocumentService {
         });
 
         // Upload file to storage
-        const filename = handlingFileUpload(file, pathUploadDocument);
+        const filename = uploadFile(file, pathUploadDocument);
 
         // Update file name in database
         const update = await this.prismaService.projectDocument.update({
@@ -106,12 +106,6 @@ export class ProjectDocumentService {
     file?: Express.Multer.File,
   ) {
     try {
-      console.log({
-        id: id,
-        file: file,
-        updateProjectDocumentDto: updateProjectDocumentDto,
-      });
-
       const result = await this.prismaService.$transaction(async () => {
         let updateProject = await this.prismaService.projectDocument.update({
           where: {
@@ -124,7 +118,7 @@ export class ProjectDocumentService {
 
         if (file) {
           // Upload file to storage
-          const filename = handlingFileUpload(file, pathUploadDocument, {
+          const filename = uploadFile(file, pathUploadDocument, {
             name: updateProject.file,
           });
 
