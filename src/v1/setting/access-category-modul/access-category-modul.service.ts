@@ -43,8 +43,50 @@ export class AccessCategoryModulService {
           roleId,
         },
         include: {
-          CategoryModul: true,
           Role: true,
+          CategoryModul: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+              AccessModul: {
+                where: {
+                  roleId,
+                },
+                select: {
+                  id: true,
+                  modulId: true,
+                  roleId: true,
+                  Modul: {
+                    select: {
+                      id: true,
+                      name: true,
+                      code: true,
+                      AccessMenu: {
+                        where: {
+                          roleId,
+                        },
+                        select: {
+                          id: true,
+                          menuId: true,
+                          roleId: true,
+                          allowedAccess: true,
+                          Menu: {
+                            select: {
+                              id: true,
+                              name: true,
+                              code: true,
+                              prefix: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       });
 
