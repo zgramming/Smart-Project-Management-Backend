@@ -7,6 +7,7 @@ import { PrismaService } from 'src/prisma.service';
 import { comparePassword, handlingCustomError } from 'src/utils/function';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
+import { UserPayloadJWT } from 'src/interface/user_payload_jwt.interface';
 
 @Injectable()
 export class AuthService {
@@ -42,8 +43,9 @@ export class AuthService {
       }
 
       // Sub is user id
-      const payload = {
+      const payload: UserPayloadJWT = {
         username: userByUsername.username,
+        roleId: userByUsername.roleId,
         sub: userByUsername.id,
       };
 

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { UserPayloadJWT } from 'src/interface/user_payload_jwt.interface';
 import { jwtConstants } from 'src/utils/constant';
 
 @Injectable()
@@ -24,12 +25,12 @@ export class ValidateJWTGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload: UserPayloadJWT = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
 
       // Sub is user id
-      request['user'] = payload;
+      request['userPayloadJWT'] = payload;
 
       return true;
     } catch (error) {

@@ -1,8 +1,11 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
 import { AccessCategoryModulService } from './access-category-modul.service';
 import { CreateAccessCategoryModulDto } from './dto/create-access-category-modul.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
+import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
+import { UserPayloadJWT } from 'src/interface/user_payload_jwt.interface';
 
+@UseGuards(ValidateJWTGuard)
 @Controller(`${prefixSettingUrl}/access-category-modul`)
 export class AccessCategoryModulController {
   constructor(
@@ -14,8 +17,14 @@ export class AccessCategoryModulController {
     return this.accessCategoryModulService.create(createAccessCategoryModulDto);
   }
 
-  @Get('role/:roleId')
-  findByRoleId(@Body() roleId: number) {
-    return this.accessCategoryModulService.findByRoleId(roleId);
+  @Get('role')
+  findByRoleId(@Req() req: any) {
+    const {
+      userPayloadJWT,
+    }: {
+      userPayloadJWT: UserPayloadJWT;
+    } = req;
+
+    return this.accessCategoryModulService.findByRoleId(userPayloadJWT.roleId);
   }
 }
