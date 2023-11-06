@@ -13,9 +13,19 @@ export class ProjectMeetingService {
     try {
       const result = await this.prismaService.projectMeeting.create({
         data: {
-          ...createProjectMeetingDto,
+          projectId: createProjectMeetingDto.projectId,
+          name: createProjectMeetingDto.name,
+          link: createProjectMeetingDto.link,
+          method: createProjectMeetingDto.method,
+          description: createProjectMeetingDto.description,
+          status: createProjectMeetingDto.status,
           startDate: new Date(createProjectMeetingDto.startDate),
           endDate: new Date(createProjectMeetingDto.endDate),
+          ProjectMeetingMember: {
+            createMany: {
+              data: createProjectMeetingDto.members,
+            },
+          },
         },
       });
 
@@ -94,28 +104,45 @@ export class ProjectMeetingService {
 
   async update(id: string, updateProjectMeetingDto: UpdateProjectMeetingDto) {
     try {
-      const meeting = await this.prismaService.projectMeeting.findUnique({
-        where: {
-          id: id,
-        },
-      });
-
-      if (!meeting) {
-        throw new NotFoundException({
-          message: 'ProjectMeeting not found',
-          error: true,
+      const result = await this.prismaService.$transaction(async () => {
+        const meeting = await this.prismaService.projectMeeting.findUnique({
+          where: {
+            id: id,
+          },
         });
-      }
 
-      const result = await this.prismaService.projectMeeting.update({
-        where: {
-          id: id,
-        },
-        data: {
-          ...updateProjectMeetingDto,
-          startDate: new Date(updateProjectMeetingDto.startDate),
-          endDate: new Date(updateProjectMeetingDto.endDate),
-        },
+        if (!meeting) {
+          throw new NotFoundException({
+            message: 'ProjectMeeting not found',
+            error: true,
+          });
+        }
+
+        const updateMeeting = await this.prismaService.projectMeeting.update({
+          where: {
+            id: id,
+          },
+          data: {
+            description: updateProjectMeetingDto.description,
+            link: updateProjectMeetingDto.link,
+            name: updateProjectMeetingDto.name,
+            projectId: updateProjectMeetingDto.projectId,
+            status: updateProjectMeetingDto.status,
+            method: updateProjectMeetingDto.method,
+            startDate: new Date(updateProjectMeetingDto.startDate),
+            endDate: new Date(updateProjectMeetingDto.endDate),
+            ProjectMeetingMember: {
+              deleteMany: {
+                projectMeetingId: id,
+              },
+              createMany: {
+                data: updateProjectMeetingDto.members,
+              },
+            },
+          },
+        });
+
+        return updateMeeting;
       });
 
       return {

@@ -19,6 +19,7 @@ import { ProjectClientModule } from './v1/project/client/project_client.module';
 import { ProjectMemberModule } from './v1/project/member/project-member.module';
 import { ProjectDocumentModule } from './v1/project/document/project-document.module';
 import { ProjectMeetingModule } from './v1/project/meeting/project-meeting.module';
+import { ProjectMeetingMemberModule } from './v1/project/meeting-member/project-meeting-member.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ProjectMeetingModule } from './v1/project/meeting/project-meeting.modul
     ProjectMemberModule,
     ProjectDocumentModule,
     ProjectMeetingModule,
+    ProjectMeetingMemberModule,
   ],
 })
 export class AppModule {}

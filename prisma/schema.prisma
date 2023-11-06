@@ -301,7 +301,7 @@ model ProjectMember {
   id String @id @default(uuid())
 
   projectId Int     @map("project_id")
-  Project   Project @relation(fields: [projectId], references: [id])
+  Project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   userId Int  @map("user_id")
   User   User @relation(fields: [userId], references: [id])
@@ -318,7 +318,7 @@ model ProjectDocument {
   id String @id @default(uuid())
 
   projectId Int     @map("project_id")
-  Project   Project @relation(fields: [projectId], references: [id])
+  Project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   file        String
   name        String
@@ -335,7 +335,7 @@ model ProjectMeeting {
   id String @id @default(uuid())
 
   projectId Int     @map("project_id")
-  Project   Project @relation(fields: [projectId], references: [id])
+  Project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   name        String
   description String?
@@ -357,7 +357,7 @@ model ProjectMeetingMember {
   id String @id @default(uuid())
 
   projectMeetingId String         @map("project_meeting_id")
-  ProjectMeeting   ProjectMeeting @relation(fields: [projectMeetingId], references: [id])
+  ProjectMeeting   ProjectMeeting @relation(fields: [projectMeetingId], references: [id], onDelete: Cascade)
 
   userId Int  @map("user_id")
   User   User @relation(fields: [userId], references: [id])
@@ -372,7 +372,7 @@ model ProjectTask {
   id String @id @default(uuid())
 
   projectId Int     @map("project_id")
-  Project   Project @relation(fields: [projectId], references: [id])
+  Project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   name               String
   description        String?

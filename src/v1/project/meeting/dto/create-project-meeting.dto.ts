@@ -1,13 +1,22 @@
 import { ActiveStatusEnum, MeetingMethodEnum } from '@prisma/client';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
+  ArrayMinSize,
+  IsArray,
   IsDateString,
   IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
+
+class MeetingMember {
+  @IsNotEmpty()
+  @IsNumber()
+  userId: number;
+}
 
 export class CreateProjectMeetingDto {
   @IsNumber()
@@ -38,4 +47,10 @@ export class CreateProjectMeetingDto {
   @ValidateIf((o) => o.status !== undefined)
   @IsEnum(ActiveStatusEnum)
   status?: ActiveStatusEnum;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => MeetingMember)
+  members: MeetingMember[];
 }
