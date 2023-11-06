@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   InternalServerErrorException,
+  NotAcceptableException,
 } from '@nestjs/common';
 import {
   PrismaClientInitializationError,
@@ -10,6 +11,11 @@ import {
   PrismaClientValidationError,
 } from '@prisma/client/runtime/library';
 import * as bcrypt from 'bcrypt';
+import * as fs from 'fs';
+
+type UploadFileOptions = {
+  name?: string;
+};
 
 export const encryptPassword = async (password: string) => {
   const saltRound = 10;
@@ -21,6 +27,57 @@ export const encryptPassword = async (password: string) => {
 export const comparePassword = async (password: string, hash: string) => {
   const result = await bcrypt.compare(password, hash);
   return result;
+};
+
+export const generateRandomNameFile = (file: Express.Multer.File) => {
+  const ext = file.originalname.split('.').pop();
+  const randomName = Array(32)
+    .fill(null)
+    .map(() => Math.round(Math.random() * 16).toString(16))
+    .join('');
+
+  return `${randomName}.${ext}`;
+};
+
+export const handlingFileUpload = (
+  file: Express.Multer.File,
+  directory: string,
+  options?: UploadFileOptions,
+) => {
+  const { name: existingName } = options;
+
+  let filename = generateRandomNameFile(file);
+
+  if (existingName) {
+    filename = existingName;
+  }
+
+  const fullPath = `${directory}/${filename}`;
+  const buffer = file.buffer;
+
+  fs.writeFile(fullPath, buffer, (err) => {
+    if (err) {
+      throw new NotAcceptableException({
+        error: true,
+        message: 'File upload failed',
+      });
+    }
+  });
+
+  return filename;
+};
+
+export const removeFileUpload = (path: string) => {
+  fs.unlink(path, (err) => {
+    if (err) {
+      throw new NotAcceptableException({
+        error: true,
+        message: 'Remove file failed',
+      });
+    }
+  });
+
+  return true;
 };
 
 export const handlingCustomError = (error: any) => {
