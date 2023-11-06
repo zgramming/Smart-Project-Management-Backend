@@ -69,6 +69,7 @@ model User {
 
   ProjectMember        ProjectMember[]
   ProjectMeetingMember ProjectMeetingMember[]
+  ProjectTask          ProjectTask[]
 
   @@map("users")
 }
@@ -257,6 +258,14 @@ enum ProjectStatusEnum {
   FINISH
 }
 
+enum ProjectTaskStatusEnum {
+  FINISH
+  PENDING
+  ON_PROGRESS
+  NEED_HELP
+  CANCEL
+}
+
 model Project {
   id Int @id @default(autoincrement())
 
@@ -374,12 +383,15 @@ model ProjectTask {
   projectId Int     @map("project_id")
   Project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
+  userId Int  @map("user_id")
+  User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   name               String
   description        String?
   startDate          DateTime               @map("start_date")
   endDate            DateTime               @map("end_date")
   degreeOfDifficulty DegreeOfDifficultyEnum @default(EASY) @map("degree_of_difficulty")
-  status             ActiveStatusEnum       @default(ACTIVE)
+  status             ProjectTaskStatusEnum  @default(ON_PROGRESS)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
