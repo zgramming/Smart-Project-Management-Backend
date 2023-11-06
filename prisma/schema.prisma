@@ -23,8 +23,8 @@ enum UserStatusEnum {
 }
 
 enum AccessMenuAllowedEnum {
+  VIEW
   CREATE
-  READ
   UPDATE
   DELETE
   PRINT
@@ -45,9 +45,10 @@ model Role {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  User        User[]
-  AccessModul AccessModul[]
-  AccessMenu  AccessMenu[]
+  User                User[]
+  AccessModul         AccessModul[]
+  AccessMenu          AccessMenu[]
+  AccessCategoryModul AccessCategoryModul[]
 
   @@map("roles")
 }
@@ -85,7 +86,8 @@ model CategoryModul {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  Modul Modul[]
+  Modul               Modul[]
+  AccessCategoryModul AccessCategoryModul[]
 
   @@map("category_moduls")
 }
@@ -94,7 +96,7 @@ model Modul {
   id Int @id @default(autoincrement())
 
   categoryModulId Int           @map("category_modul_id")
-  CategoryModul   CategoryModul @relation(fields: [categoryModulId], references: [id])
+  CategoryModul   CategoryModul @relation(fields: [categoryModulId], references: [id], onDelete: Cascade)
 
   name        String
   code        String           @unique
@@ -116,10 +118,10 @@ model Menu {
   id Int @id @default(autoincrement())
 
   parentMenuId Int?  @map("parent_menu_id")
-  ParentMenu   Menu? @relation("ParentMenu", fields: [parentMenuId], references: [id])
+  ParentMenu   Menu? @relation("ParentMenu", fields: [parentMenuId], references: [id], onDelete: Cascade)
 
   modulId Int   @map("modul_id")
-  Modul   Modul @relation(fields: [modulId], references: [id])
+  Modul   Modul @relation(fields: [modulId], references: [id], onDelete: Cascade)
 
   name        String
   code        String           @unique
@@ -136,6 +138,21 @@ model Menu {
   @@map("menus")
 }
 
+model AccessCategoryModul {
+  id String @id @default(uuid())
+
+  roleId Int  @map("role_id")
+  Role   Role @relation(fields: [roleId], references: [id])
+
+  categoryModulId Int           @map("category_modul_id")
+  CategoryModul   CategoryModul @relation(fields: [categoryModulId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("access_category_moduls")
+}
+
 model AccessModul {
   id String @id @default(uuid())
 
@@ -143,7 +160,7 @@ model AccessModul {
   Role   Role @relation(fields: [roleId], references: [id])
 
   modulId Int   @map("modul_id")
-  Modul   Modul @relation(fields: [modulId], references: [id])
+  Modul   Modul @relation(fields: [modulId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -158,10 +175,10 @@ model AccessMenu {
   Role   Role @relation(fields: [roleId], references: [id])
 
   menuId Int  @map("menu_id")
-  Menu   Menu @relation(fields: [menuId], references: [id])
+  Menu   Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
 
   modulId Int   @map("modul_id")
-  Modul   Modul @relation(fields: [modulId], references: [id])
+  Modul   Modul @relation(fields: [modulId], references: [id], onDelete: Cascade)
 
   allowedAccess AccessMenuAllowedEnum[] @map("allowed_access")
 
@@ -175,7 +192,7 @@ model MasterCategory {
   id Int @id @default(autoincrement())
 
   parentMasterCategoryId Int?            @map("parent_master_category_id")
-  ParentMasterCategory   MasterCategory? @relation("ParentMasterCategory", fields: [parentMasterCategoryId], references: [id])
+  ParentMasterCategory   MasterCategory? @relation("ParentMasterCategory", fields: [parentMasterCategoryId], references: [id], onDelete: Cascade)
 
   name        String
   code        String           @unique
@@ -195,10 +212,10 @@ model MasterData {
   id Int @id @default(autoincrement())
 
   parentMasterDataId Int?        @map("parent_master_data_id")
-  ParentMasterData   MasterData? @relation("ParentMasterData", fields: [parentMasterDataId], references: [id])
+  ParentMasterData   MasterData? @relation("ParentMasterData", fields: [parentMasterDataId], references: [id], onDelete: Cascade)
 
   masterCategoryId Int            @map("master_category_id")
-  MasterCategory   MasterCategory @relation(fields: [masterCategoryId], references: [id])
+  MasterCategory   MasterCategory @relation(fields: [masterCategoryId], references: [id], onDelete: Cascade)
 
   masterCategoryCode String           @map("master_category_code")
   name               String

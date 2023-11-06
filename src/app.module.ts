@@ -21,6 +21,7 @@ import { ProjectDocumentModule } from './v1/project/document/project-document.mo
 import { ProjectMeetingModule } from './v1/project/meeting/project-meeting.module';
 import { ProjectMeetingMemberModule } from './v1/project/meeting-member/project-meeting-member.module';
 import { ProjectTaskModule } from './v1/project/task/project-task.module';
+import { AccessCategoryModulModule } from './v1/setting/access-category-modul/access-category-modul.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { ProjectTaskModule } from './v1/project/task/project-task.module';
     ProjectMeetingModule,
     ProjectMeetingMemberModule,
     ProjectTaskModule,
+    AccessCategoryModulModule,
   ],
 })
 export class AppModule {}
