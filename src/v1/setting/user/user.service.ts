@@ -78,6 +78,44 @@ export class UserService {
     }
   }
 
+  async findOnlyDeveloperAndProyekManager() {
+    try {
+      const role = await this.prisma.role.findMany({
+        where: {
+          code: { in: ['DEVELOPER', 'PROYEK_MANAGER'] },
+        },
+      });
+      const roleIds = role.map((item) => item.id);
+      const result = await this.prisma.user.findMany({
+        where: {
+          roleId: {
+            in: roleIds,
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          roleId: true,
+          role: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+        },
+      });
+
+      return {
+        error: false,
+        message: 'User retrieved successfully',
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {
       const user = await this.prisma.user.findUnique({

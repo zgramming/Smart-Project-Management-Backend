@@ -36,6 +36,12 @@ export class UserController {
     return result;
   }
 
+  @Get('by-role/developer-and-project-manager')
+  async findOnlyDeveloperAndProyekManager() {
+    const result = await this.userService.findOnlyDeveloperAndProyekManager();
+    return result;
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const result = await this.userService.findOne(+id);
