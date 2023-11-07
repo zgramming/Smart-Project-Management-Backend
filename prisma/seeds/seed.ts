@@ -81,36 +81,36 @@ const userSeeder = async ({ onlyTruncate = false }: SeederType) => {
       {
         id: 1,
         roleId: IDRole.SUPERADMIN,
-        username: 'superadmin',
-        name: 'Super Admin',
+        username: 'zeffry',
+        name: 'Zeffry Reynando',
         password: await encryptPassword('12345678'),
       },
       {
         id: 2,
         roleId: IDRole.ADMIN,
-        username: 'admin',
-        name: 'Admin',
+        username: 'syarif',
+        name: 'Syarif Hidayatullah',
         password: await encryptPassword('12345678'),
       },
       {
         id: 3,
         roleId: IDRole.DEVELOPER,
-        username: 'developer',
-        name: 'Developer',
+        username: 'nakia',
+        name: 'Annisa Nakia Shakila',
         password: await encryptPassword('12345678'),
       },
       {
         id: 4,
         roleId: IDRole.PROYEK_MANAGER,
-        username: 'proyekmanager',
-        name: 'Proyek Manager',
+        username: 'rifda',
+        name: 'Rifda Kamila',
         password: await encryptPassword('12345678'),
       },
       {
         id: 5,
         roleId: IDRole.OWNER,
-        username: 'owner',
-        name: 'Owner',
+        username: 'ricky',
+        name: 'Ricky Achmad Alvieri',
         password: await encryptPassword('12345678'),
       },
     ],
@@ -209,28 +209,24 @@ const menuSeeder = async ({ onlyTruncate = false }: SeederType) => {
     data: [
       // Developer
       {
-        id: 1,
         modulId: IDModul.DEVELOPER,
         code: 'MNU_DEVELOPER_DASHBOARD',
         name: 'Dashboard',
         prefix: 'developer/dashboard',
       },
       {
-        id: 2,
         modulId: IDModul.DEVELOPER,
         code: 'MNU_DEVELOPER_TASK',
         name: 'Task',
         prefix: 'developer/task',
       },
       {
-        id: 3,
         modulId: IDModul.DEVELOPER,
         code: 'MNU_DEVELOPER_PROJECT',
         name: 'Project',
         prefix: 'developer/project',
       },
       {
-        id: 4,
         modulId: IDModul.DEVELOPER,
         code: 'MNU_DEVELOPER_MEEETING',
         name: 'Meeting',
@@ -239,28 +235,24 @@ const menuSeeder = async ({ onlyTruncate = false }: SeederType) => {
 
       // Proyek Manager
       {
-        id: 5,
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MNU_PROYEK_MANAGER_DASHBOARD',
         name: 'Dashboard',
         prefix: 'proyek-manager/dashboard',
       },
       {
-        id: 6,
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MN_PROYEK_MANAGER_ASSIGN_TASK',
         name: 'Assign Task',
         prefix: 'proyek-manager/assign-task',
       },
       {
-        id: 7,
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MNU_PROYEK_MANAGER_PROJECT',
         name: 'Project',
         prefix: 'proyek-manager/project',
       },
       {
-        id: 8,
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MNU_PROYEK_MANAGER_MEEETING',
         name: 'Meeting',
@@ -268,23 +260,26 @@ const menuSeeder = async ({ onlyTruncate = false }: SeederType) => {
       },
 
       {
-        id: 9,
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MNU_PROYEK_MANAGER_DOCUMENT',
         name: 'Document',
         prefix: 'proyek-manager/document',
       },
+      {
+        modulId: IDModul.PROYEK_MANAGER,
+        code: 'MNU_PROYEK_MANAGER_CLIENT',
+        name: 'Client',
+        prefix: 'proyek-manager/client',
+      },
 
       // Owner
       {
-        id: 10,
         modulId: IDModul.OWNER,
         code: 'MNU_OWNER_DASHBOARD',
         name: 'Dashboard',
         prefix: 'owner/dashboard',
       },
       {
-        id: 11,
         modulId: IDModul.OWNER,
         code: 'MNU_OWNER_REPORT',
         name: 'Report',
@@ -293,93 +288,81 @@ const menuSeeder = async ({ onlyTruncate = false }: SeederType) => {
 
       // Admin
       {
-        id: 12,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_ROLE',
         name: 'Role',
         prefix: 'setting/role',
       },
       {
-        id: 13,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_USER',
         name: 'User',
         prefix: 'setting/user',
       },
       {
-        id: 14,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_CATEGORY_MODUL',
         name: 'Category Modul',
         prefix: 'setting/category-modul',
       },
       {
-        id: 15,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_MODUL',
         name: 'Modul',
         prefix: 'setting/modul',
       },
       {
-        id: 16,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_MENU',
         name: 'Menu',
         prefix: 'setting/menu',
       },
       {
-        id: 17,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_ACCESS_CATEGORY_MODUL',
         name: 'Access Category Modul',
         prefix: 'setting/access-category-modul',
       },
       {
-        id: 18,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_ACCESS_MODUL',
         name: 'Access Modul',
         prefix: 'setting/access-modul',
       },
       {
-        id: 19,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_ACCESS_MENU',
         name: 'Access Menu',
         prefix: 'setting/access-menu',
       },
       {
-        id: 20,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_MASTER_CATEGORY',
         name: 'Master Category',
         prefix: 'setting/master-category',
       },
       {
-        id: 21,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_PARAMETER',
         name: 'Parameter',
         prefix: 'setting/parameter',
       },
       {
-        id: 22,
+        id: 9999,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_PARENT_MENU',
         name: 'Parent Menu',
         prefix: 'setting/parent-menu',
       },
       {
-        id: 23,
-        parentMenuId: 22,
+        parentMenuId: 9999,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_PARENT_MENU_CHILDREN_1',
         name: 'Parent Menu Children 1',
         prefix: 'setting/parent-menu/children-1',
       },
       {
-        id: 24,
-        parentMenuId: 22,
+        parentMenuId: 9999,
         modulId: IDModul.SETTING,
         code: 'MNU_SETTING_PARENT_MENU_CHILDREN_2',
         name: 'Parent Menu Children 2',
@@ -579,6 +562,23 @@ const accessMenuSeeder = async ({ onlyTruncate = false }: SeederType) => {
   });
 };
 
+const projectClientSeeder = async () => {
+  // Delete all data
+  await prisma.projectClient.deleteMany();
+
+  const result = await prisma.projectClient.createMany({
+    data: [
+      { id: '1', code: 'CLT_1', name: 'PT. ABC' },
+      { id: '2', code: 'CLT_2', name: 'PT. DEF' },
+      { id: '3', code: 'CLT_3', name: 'PT. GHI' },
+    ],
+  });
+
+  console.log({
+    seederProjectClient: result,
+  });
+};
+
 const main = async () => {
   const onlyTruncate = false;
   try {
@@ -591,6 +591,9 @@ const main = async () => {
     await accessCategoryModulSeeder({ onlyTruncate });
     await accessModulSeeder({ onlyTruncate });
     await accessMenuSeeder({ onlyTruncate });
+
+    // Start Project Seeder
+    await projectClientSeeder();
   } catch (error) {
     console.log({
       error,
