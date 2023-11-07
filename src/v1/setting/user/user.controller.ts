@@ -8,12 +8,14 @@ import {
   Delete,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
 import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
+import { UserPayloadJWT } from 'src/interface/user_payload_jwt.interface';
 
 @UseGuards(ValidateJWTGuard)
 @Controller(`${prefixSettingUrl}/user`)
@@ -33,6 +35,13 @@ export class UserController {
       page: page ? +page : undefined,
       limit: limit ? +limit : undefined,
     });
+    return result;
+  }
+
+  @Get('me')
+  async findMe(@Req() { userPayloadJWT }: { userPayloadJWT: UserPayloadJWT }) {
+    const { sub } = userPayloadJWT;
+    const result = await this.userService.findOne(sub);
     return result;
   }
 

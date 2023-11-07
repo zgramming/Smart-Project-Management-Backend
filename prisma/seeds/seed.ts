@@ -53,7 +53,7 @@ const roleSeeder = async ({ onlyTruncate = false }: SeederType) => {
       {
         id: IDRole.PROYEK_MANAGER,
         code: 'PROYEK_MANAGER',
-        name: 'Proyek Manager',
+        name: 'Project Manager',
       },
       {
         id: IDRole.OWNER,
@@ -172,8 +172,8 @@ const modulSeeder = async ({ onlyTruncate = false }: SeederType) => {
         id: IDModul.PROYEK_MANAGER,
         categoryModulId: 1,
         code: 'MDL_PROYEK_MANAGER',
-        name: 'Proyek Manager',
-        prefix: 'proyek-manager',
+        name: 'Project Manager',
+        prefix: 'project-manager',
       },
       {
         id: IDModul.OWNER,
@@ -233,43 +233,43 @@ const menuSeeder = async ({ onlyTruncate = false }: SeederType) => {
         prefix: 'developer/meeting',
       },
 
-      // Proyek Manager
+      // Project Manager
       {
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MNU_PROYEK_MANAGER_DASHBOARD',
         name: 'Dashboard',
-        prefix: 'proyek-manager/dashboard',
+        prefix: 'project-manager/dashboard',
       },
       {
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MN_PROYEK_MANAGER_ASSIGN_TASK',
         name: 'Assign Task',
-        prefix: 'proyek-manager/assign-task',
+        prefix: 'project-manager/assign-task',
       },
       {
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MNU_PROYEK_MANAGER_PROJECT',
         name: 'Project',
-        prefix: 'proyek-manager/project',
+        prefix: 'project-manager/project',
       },
       {
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MNU_PROYEK_MANAGER_MEEETING',
         name: 'Meeting',
-        prefix: 'proyek-manager/meeting',
+        prefix: 'project-manager/meeting',
       },
 
       {
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MNU_PROYEK_MANAGER_DOCUMENT',
         name: 'Document',
-        prefix: 'proyek-manager/document',
+        prefix: 'project-manager/document',
       },
       {
         modulId: IDModul.PROYEK_MANAGER,
         code: 'MNU_PROYEK_MANAGER_CLIENT',
         name: 'Client',
-        prefix: 'proyek-manager/client',
+        prefix: 'project-manager/client',
       },
 
       // Owner
@@ -404,7 +404,7 @@ const accessCategoryModulSeeder = async ({
         categoryModulId: 1,
         roleId: IDRole.DEVELOPER,
       },
-      // Proyek Manager
+      // Project Manager
       {
         categoryModulId: 1,
         roleId: IDRole.PROYEK_MANAGER,
@@ -459,7 +459,7 @@ const accessModulSeeder = async ({ onlyTruncate = false }: SeederType) => {
           categoryModulId: item.categoryModulId,
         })),
 
-      // Proyek Manager
+      // Project Manager
       ...modul
         .filter((item) => item.code === 'MDL_PROYEK_MANAGER')
         .map((item) => ({
@@ -535,9 +535,9 @@ const accessMenuSeeder = async ({ onlyTruncate = false }: SeederType) => {
           allowedAccess: allAccess,
         })),
 
-      // Proyek Manager
+      // Project Manager
       ...menus
-        .filter((item) => item.prefix.startsWith('proyek-manager'))
+        .filter((item) => item.prefix.startsWith('project-manager'))
         .map((item) => ({
           menuId: item.id,
           roleId: IDRole.PROYEK_MANAGER,

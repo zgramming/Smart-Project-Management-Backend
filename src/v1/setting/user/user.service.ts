@@ -58,6 +58,19 @@ export class UserService {
         where: {
           id,
         },
+        select: {
+          id: true,
+          roleId: true,
+          name: true,
+          username: true,
+          role: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+        },
       });
 
       if (!result) {
