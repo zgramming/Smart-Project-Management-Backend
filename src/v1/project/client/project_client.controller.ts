@@ -28,10 +28,11 @@ export class ProjectClientController {
 
   @Get()
   findAll(@Query() query: any) {
-    const { limit = 100, page = 1 } = query;
+    const { limit = 100, page = 1, name = undefined } = query;
     return this.projectClientService.findAll({
       limit: Number(limit),
       page: Number(page),
+      name: name,
     });
   }
 

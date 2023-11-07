@@ -3,7 +3,7 @@ import { CreateProjectClientDto } from './dto/create-project_client.dto';
 import { UpdateProjectClientDto } from './dto/update-project_client.dto';
 import { PrismaService } from 'src/prisma.service';
 import { handlingCustomError } from 'src/utils/function';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
+import { IProjectClientFindAllQuery } from './query_param/project_client_findall.query';
 
 @Injectable()
 export class ProjectClientService {
@@ -24,15 +24,22 @@ export class ProjectClientService {
     }
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: IProjectClientFindAllQuery) {
     try {
       const page = params?.page || 1;
       const limit = params?.limit || 100;
+      const queryName = params?.name || undefined;
 
       const offset = (page - 1) * limit;
       const result = await this.prismaService.projectClient.findMany({
         take: limit,
         skip: offset,
+        where: {
+          name: {
+            contains: queryName,
+            mode: 'insensitive',
+          },
+        },
         include: {
           _count: {
             select: {
