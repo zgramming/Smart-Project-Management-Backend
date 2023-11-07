@@ -10,9 +10,6 @@ import {
 
 class ProjectMember {
   @IsNumber()
-  projectId: number;
-
-  @IsNumber()
   userId: number;
 
   status?: ActiveStatusEnum;

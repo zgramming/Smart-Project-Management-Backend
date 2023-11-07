@@ -15,7 +15,7 @@ export class ProjectClientService {
       });
 
       return {
-        message: 'ProjectClient created successfully',
+        message: 'Project Client created successfully',
         error: false,
         data: result,
       };
@@ -33,11 +33,21 @@ export class ProjectClientService {
       const result = await this.prismaService.projectClient.findMany({
         take: limit,
         skip: offset,
+        include: {
+          _count: {
+            select: {
+              Project: true,
+            },
+          },
+        },
       });
+
+      const total = await this.prismaService.projectClient.count();
 
       return {
         message: 'ProjectClients retrieved successfully',
         error: false,
+        total: total,
         data: result,
       };
     } catch (error) {
