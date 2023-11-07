@@ -143,7 +143,7 @@ model AccessCategoryModul {
   id String @id @default(uuid())
 
   roleId Int  @map("role_id")
-  Role   Role @relation(fields: [roleId], references: [id])
+  Role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   categoryModulId Int           @map("category_modul_id")
   CategoryModul   CategoryModul @relation(fields: [categoryModulId], references: [id], onDelete: Cascade)
@@ -161,7 +161,7 @@ model AccessModul {
   CategoryModul   CategoryModul @relation(fields: [categoryModulId], references: [id], onDelete: Cascade)
 
   roleId Int  @map("role_id")
-  Role   Role @relation(fields: [roleId], references: [id])
+  Role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   modulId Int   @map("modul_id")
   Modul   Modul @relation(fields: [modulId], references: [id], onDelete: Cascade)
@@ -176,7 +176,7 @@ model AccessMenu {
   id String @id @default(uuid())
 
   roleId Int  @map("role_id")
-  Role   Role @relation(fields: [roleId], references: [id])
+  Role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   menuId Int  @map("menu_id")
   Menu   Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)

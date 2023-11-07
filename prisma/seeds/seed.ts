@@ -508,6 +508,46 @@ const accessMenuSeeder = async ({ onlyTruncate = false }: SeederType) => {
         modulId: item.modulId,
         allowedAccess: allAccess,
       })),
+
+      // Admin
+      ...menus
+        .filter((item) => item.prefix.startsWith('setting'))
+        .map((item) => ({
+          menuId: item.id,
+          roleId: IDRole.ADMIN,
+          modulId: item.modulId,
+          allowedAccess: allAccess,
+        })),
+
+      // Developer
+      ...menus
+        .filter((item) => item.prefix.startsWith('developer'))
+        .map((item) => ({
+          menuId: item.id,
+          roleId: IDRole.DEVELOPER,
+          modulId: item.modulId,
+          allowedAccess: allAccess,
+        })),
+
+      // Proyek Manager
+      ...menus
+        .filter((item) => item.prefix.startsWith('proyek-manager'))
+        .map((item) => ({
+          menuId: item.id,
+          roleId: IDRole.PROYEK_MANAGER,
+          modulId: item.modulId,
+          allowedAccess: allAccess,
+        })),
+
+      // Owner
+      ...menus
+        .filter((item) => item.prefix.startsWith('owner'))
+        .map((item) => ({
+          menuId: item.id,
+          roleId: IDRole.OWNER,
+          modulId: item.modulId,
+          allowedAccess: allAccess,
+        })),
     ],
   });
 
@@ -517,32 +557,17 @@ const accessMenuSeeder = async ({ onlyTruncate = false }: SeederType) => {
 };
 
 const main = async () => {
+  const onlyTruncate = false;
   try {
     // Execute seeders
-    await roleSeeder({
-      onlyTruncate: false,
-    });
-    await userSeeder({
-      onlyTruncate: false,
-    });
-    await categoryModulSeeder({
-      onlyTruncate: false,
-    });
-    await modulSeeder({
-      onlyTruncate: false,
-    });
-    await menuSeeder({
-      onlyTruncate: false,
-    });
-    await accessCategoryModulSeeder({
-      onlyTruncate: false,
-    });
-    await accessModulSeeder({
-      onlyTruncate: false,
-    });
-    await accessMenuSeeder({
-      onlyTruncate: false,
-    });
+    await roleSeeder({ onlyTruncate });
+    await userSeeder({ onlyTruncate });
+    await categoryModulSeeder({ onlyTruncate });
+    await modulSeeder({ onlyTruncate });
+    await menuSeeder({ onlyTruncate });
+    await accessCategoryModulSeeder({ onlyTruncate });
+    await accessModulSeeder({ onlyTruncate });
+    await accessMenuSeeder({ onlyTruncate });
   } catch (error) {
     console.log({
       error,
