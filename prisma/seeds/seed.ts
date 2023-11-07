@@ -362,6 +362,29 @@ const menuSeeder = async ({ onlyTruncate = false }: SeederType) => {
         name: 'Parameter',
         prefix: 'setting/parameter',
       },
+      {
+        id: 22,
+        modulId: IDModul.SETTING,
+        code: 'MNU_SETTING_PARENT_MENU',
+        name: 'Parent Menu',
+        prefix: 'setting/parent-menu',
+      },
+      {
+        id: 23,
+        parentMenuId: 22,
+        modulId: IDModul.SETTING,
+        code: 'MNU_SETTING_PARENT_MENU_CHILDREN_1',
+        name: 'Parent Menu Children 1',
+        prefix: 'setting/parent-menu/children-1',
+      },
+      {
+        id: 24,
+        parentMenuId: 22,
+        modulId: IDModul.SETTING,
+        code: 'MNU_SETTING_PARENT_MENU_CHILDREN_2',
+        name: 'Parent Menu Children 2',
+        prefix: 'setting/parent-menu/children-2',
+      },
     ],
   });
 

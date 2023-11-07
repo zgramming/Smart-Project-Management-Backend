@@ -62,6 +62,7 @@ export class AccessCategoryModulService {
                       id: true,
                       name: true,
                       code: true,
+                      prefix: true,
                       AccessMenu: {
                         where: {
                           roleId,
@@ -74,6 +75,7 @@ export class AccessCategoryModulService {
                           Menu: {
                             select: {
                               id: true,
+                              parentMenuId: true,
                               name: true,
                               code: true,
                               prefix: true,
