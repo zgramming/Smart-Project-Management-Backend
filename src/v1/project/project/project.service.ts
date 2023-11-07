@@ -2,17 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { PrismaService } from 'src/prisma.service';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
 import { handlingCustomError } from 'src/utils/function';
+import { IProjectFindAllQueryParam } from './query_param/project-findall.query';
 
 @Injectable()
 export class ProjectService {
   constructor(private readonly prismaService: PrismaService) {}
   async create(createProjectDto: CreateProjectDto) {
     try {
-      const members = createProjectDto.members.map((value) => ({
-        userId: value.userId,
-      }));
       const result = await this.prismaService.project.create({
         data: {
           clientId: createProjectDto.clientId,
@@ -23,7 +20,9 @@ export class ProjectService {
           endDate: new Date(createProjectDto.endDate),
           ProjectMember: {
             createMany: {
-              data: members,
+              data: createProjectDto.members.map((value) => ({
+                userId: value.userId,
+              })),
             },
           },
         },
@@ -39,27 +38,46 @@ export class ProjectService {
     }
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: IProjectFindAllQueryParam) {
     try {
       const page = params?.page || 1;
       const limit = params?.limit || 100;
+      const name = params?.name;
 
       const offset = (page - 1) * limit;
       const result = await this.prismaService.project.findMany({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
         take: limit,
         skip: offset,
         include: {
+          ProjectClient: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
           ProjectMember: {
-            include: {
+            select: {
+              id: true,
+              userId: true,
               User: { select: { id: true, name: true } },
             },
           },
         },
       });
 
+      const total = await this.prismaService.project.count();
+
       return {
         message: 'Projects retrieved successfully',
         error: false,
+        total: total,
         data: result,
       };
     } catch (error) {
@@ -72,8 +90,17 @@ export class ProjectService {
       const result = await this.prismaService.project.findUnique({
         where: { id: id },
         include: {
+          ProjectClient: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
           ProjectMember: {
-            include: {
+            select: {
+              id: true,
+              userId: true,
               User: { select: { id: true, name: true } },
             },
           },
