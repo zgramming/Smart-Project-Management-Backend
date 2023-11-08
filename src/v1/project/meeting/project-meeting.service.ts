@@ -69,6 +69,14 @@ export class ProjectMeetingService {
             select: {
               id: true,
               name: true,
+              clientId: true,
+              ProjectClient: {
+                select: {
+                  id: true,
+                  name: true,
+                  code: true,
+                },
+              },
             },
           },
           ProjectMeetingMember: {
@@ -126,6 +134,14 @@ export class ProjectMeetingService {
             select: {
               id: true,
               name: true,
+              clientId: true,
+              ProjectClient: {
+                select: {
+                  id: true,
+                  name: true,
+                  code: true,
+                },
+              },
             },
           },
           ProjectMeetingMember: {

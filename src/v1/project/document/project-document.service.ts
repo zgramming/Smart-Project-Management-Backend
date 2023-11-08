@@ -7,8 +7,8 @@ import {
   removeFileUpload,
   uploadFile,
 } from 'src/utils/function';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
 import { pathUploadDocument } from 'src/utils/constant';
+import { IProjectDocumentFindAllQuery } from './query_param/project-document-findall.query';
 
 @Injectable()
 export class ProjectDocumentService {
@@ -55,23 +55,62 @@ export class ProjectDocumentService {
     }
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: IProjectDocumentFindAllQuery) {
     try {
       const page = params?.page || 1;
       const limit = params?.limit || 100;
+      const clientId = params?.clientId;
+      const projectId = params?.projectId;
+      const name = params?.name;
 
       const offset = (page - 1) * limit;
       const result = await this.prismaService.projectDocument.findMany({
         take: limit,
         skip: offset,
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+          Project: {
+            id: projectId && Number(projectId),
+            clientId: clientId,
+          },
+        },
         include: {
-          Project: true,
+          Project: {
+            select: {
+              id: true,
+              name: true,
+              clientId: true,
+              ProjectClient: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const total = await this.prismaService.projectDocument.count({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+          Project: {
+            id: projectId && Number(projectId),
+            clientId: clientId,
+          },
         },
       });
 
       return {
         message: 'ProjectDocuments retrieved successfully',
         error: false,
+        total: total,
         data: result,
       };
     } catch (error) {
@@ -86,7 +125,19 @@ export class ProjectDocumentService {
           id: id,
         },
         include: {
-          Project: true,
+          Project: {
+            select: {
+              id: true,
+              name: true,
+              clientId: true,
+              ProjectClient: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
         },
       });
 

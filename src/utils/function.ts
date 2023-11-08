@@ -44,7 +44,7 @@ export const uploadFile = (
   directory: string,
   options?: UploadFileOptions,
 ) => {
-  const { name: existingName } = options;
+  const { name: existingName } = options ?? {};
 
   let filename = generateRandomNameFile(file);
 
@@ -68,6 +68,14 @@ export const uploadFile = (
 };
 
 export const removeFileUpload = (path: string) => {
+  if (path.length === 0 || path === '') return true;
+
+  const isExists = fs.existsSync(path);
+
+  if (!isExists) {
+    return true;
+  }
+
   fs.unlink(path, (err) => {
     if (err) {
       throw new NotAcceptableException({

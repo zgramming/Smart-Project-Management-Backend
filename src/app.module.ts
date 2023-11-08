@@ -22,6 +22,8 @@ import { ProjectMeetingModule } from './v1/project/meeting/project-meeting.modul
 import { ProjectMeetingMemberModule } from './v1/project/meeting-member/project-meeting-member.module';
 import { ProjectTaskModule } from './v1/project/task/project-task.module';
 import { AccessCategoryModulModule } from './v1/setting/access-category-modul/access-category-modul.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -32,10 +34,17 @@ import { AccessCategoryModulModule } from './v1/setting/access-category-modul/ac
       load: [envConfiguration],
     }),
 
+    // JWT
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1d' },
+    }),
+
+    // Server static for uploads folder
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '../uploads'),
+      serveRoot: '/uploads/',
     }),
 
     // V1 Module

@@ -9,6 +9,7 @@ import {
   UploadedFile,
   UseInterceptors,
   ParseFilePipeBuilder,
+  Query,
 } from '@nestjs/common';
 import { ProjectDocumentService } from './project-document.service';
 import { CreateProjectDocumentDto } from './dto/create-project-document.dto';
@@ -42,8 +43,16 @@ export class ProjectDocumentController {
   }
 
   @Get()
-  findAll() {
-    return this.projectDocumentService.findAll();
+  findAll(@Query() query: any) {
+    const { page = 1, limit = 100, projectId, clientId, name } = query;
+
+    return this.projectDocumentService.findAll({
+      page: +page,
+      limit: +limit,
+      projectId,
+      clientId,
+      name,
+    });
   }
 
   @Get(':id')
