@@ -4,6 +4,7 @@ import { UpdateProjectTaskDto } from './dto/update-project-task.dto';
 import { handlingCustomError } from 'src/utils/function';
 import { PrismaService } from 'src/prisma.service';
 import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
+import { IProjectTaskFindAllQuery } from './query_param/project-task-findall.query';
 
 @Injectable()
 export class ProjectTaskService {
@@ -28,24 +29,82 @@ export class ProjectTaskService {
     }
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: IProjectTaskFindAllQuery) {
     try {
-      const limit = params?.limit || 100;
-      const page = params?.page || 1;
+      const {
+        limit = 100,
+        page = 1,
+        clientId,
+        projectId,
+        userId,
+        status,
+        name,
+      } = params || {};
       const offset = (page - 1) * limit;
-
       const result = await this.prismaService.projectTask.findMany({
         take: limit,
         skip: offset,
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+          projectId: projectId,
+          userId: userId,
+          status: status,
+          Project: {
+            clientId: clientId,
+          },
+        },
         include: {
-          Project: true,
-          User: true,
+          Project: {
+            select: {
+              id: true,
+              name: true,
+              clientId: true,
+              ProjectClient: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          User: {
+            select: {
+              id: true,
+              name: true,
+              roleId: true,
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const total = await this.prismaService.projectTask.count({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+          projectId: projectId,
+          userId: userId,
+          status: status,
+          Project: {
+            clientId: clientId,
+          },
         },
       });
 
       return {
         error: false,
         message: `All task has been fetched`,
+        total: total,
         data: result,
       };
     } catch (error) {
@@ -60,8 +119,32 @@ export class ProjectTaskService {
           id: id,
         },
         include: {
-          Project: true,
-          User: true,
+          Project: {
+            select: {
+              id: true,
+              name: true,
+              clientId: true,
+              ProjectClient: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          User: {
+            select: {
+              id: true,
+              name: true,
+              roleId: true,
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
         },
       });
 
