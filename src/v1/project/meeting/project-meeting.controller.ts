@@ -24,10 +24,21 @@ export class ProjectMeetingController {
 
   @Get()
   findAll(@Query() query: any) {
-    const { page = 1, limit = 100 } = query;
+    const {
+      page = 1,
+      limit = 100,
+      name,
+      projectId,
+      // startDate,
+      // endDate,
+      method,
+    } = query;
     return this.projectMeetingService.findAll({
       page: Number(page),
       limit: Number(limit),
+      name: name,
+      projectId: projectId,
+      method: method,
     });
   }
 

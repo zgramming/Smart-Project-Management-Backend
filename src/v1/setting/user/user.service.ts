@@ -40,6 +40,19 @@ export class UserService {
       const result = await this.prisma.user.findMany({
         take: limit,
         skip: (page - 1) * limit,
+        select: {
+          id: true,
+          name: true,
+          roleId: true,
+
+          role: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+        },
       });
 
       return {

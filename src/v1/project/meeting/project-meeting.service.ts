@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProjectMeetingDto } from './dto/create-project-meeting.dto';
 import { UpdateProjectMeetingDto } from './dto/update-project-meeting.dto';
 import { handlingCustomError } from 'src/utils/function';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
 import { PrismaService } from 'src/prisma.service';
+import { IProjectMeetingFindAllQuery } from './query_param/project-meeting-findall.query';
 
 @Injectable()
 export class ProjectMeetingService {
@@ -39,23 +39,68 @@ export class ProjectMeetingService {
     }
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: IProjectMeetingFindAllQuery) {
     try {
-      const page = params?.page || 1;
-      const limit = params?.limit || 100;
+      const {
+        page = 1,
+        limit = 100,
+        name,
+        projectId,
+        // startDate,
+        // endDate,
+        method,
+      } = params;
 
       const offset = (page - 1) * limit;
 
       const result = await this.prismaService.projectMeeting.findMany({
         take: limit,
         skip: offset,
+        where: {
+          name: {
+            mode: 'insensitive',
+            contains: name,
+          },
+          projectId: projectId,
+          method: method,
+        },
         include: {
-          Project: true,
-          ProjectMeetingMember: {
-            include: {
-              User: true,
+          Project: {
+            select: {
+              id: true,
+              name: true,
             },
           },
+          ProjectMeetingMember: {
+            select: {
+              id: true,
+              userId: true,
+              User: {
+                select: {
+                  id: true,
+                  name: true,
+                  roleId: true,
+                  role: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const total = await this.prismaService.projectMeeting.count({
+        where: {
+          name: {
+            mode: 'insensitive',
+            contains: name,
+          },
+          projectId: projectId,
+          method: method,
         },
       });
 
@@ -63,6 +108,7 @@ export class ProjectMeetingService {
         message: 'ProjectMeeting found successfully',
         error: false,
         data: result,
+        total: total,
       };
     } catch (error) {
       return handlingCustomError(error);
@@ -76,10 +122,29 @@ export class ProjectMeetingService {
           id: id,
         },
         include: {
-          Project: true,
+          Project: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
           ProjectMeetingMember: {
-            include: {
-              User: true,
+            select: {
+              id: true,
+              userId: true,
+              User: {
+                select: {
+                  id: true,
+                  name: true,
+                  roleId: true,
+                  role: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
