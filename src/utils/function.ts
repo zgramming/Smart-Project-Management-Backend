@@ -49,7 +49,13 @@ export const uploadFile = (
   let filename = generateRandomNameFile(file);
 
   if (existingName) {
-    filename = existingName;
+    const [name, ext] = existingName.split('.');
+    const newExt = file.originalname.split('.').pop();
+    if (ext !== newExt) {
+      filename = `${name}.${newExt}`;
+    } else {
+      filename = existingName;
+    }
   }
 
   const fullPath = `${directory}/${filename}`;
