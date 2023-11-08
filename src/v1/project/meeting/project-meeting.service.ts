@@ -123,6 +123,100 @@ export class ProjectMeetingService {
     }
   }
 
+  async findAllByMe(userId: number, params?: IProjectMeetingFindAllQuery) {
+    try {
+      const {
+        page = 1,
+        limit = 100,
+        name,
+        projectId,
+        // startDate,
+        // endDate,
+        method,
+      } = params;
+
+      const offset = (page - 1) * limit;
+
+      const result = await this.prismaService.projectMeeting.findMany({
+        take: limit,
+        skip: offset,
+        where: {
+          ProjectMeetingMember: {
+            some: {
+              userId: userId,
+            },
+          },
+          name: {
+            mode: 'insensitive',
+            contains: name,
+          },
+          projectId: projectId,
+          method: method,
+        },
+        include: {
+          Project: {
+            select: {
+              id: true,
+              name: true,
+              clientId: true,
+              ProjectClient: {
+                select: {
+                  id: true,
+                  name: true,
+                  code: true,
+                },
+              },
+            },
+          },
+          ProjectMeetingMember: {
+            select: {
+              id: true,
+              userId: true,
+              User: {
+                select: {
+                  id: true,
+                  name: true,
+                  roleId: true,
+                  role: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const total = await this.prismaService.projectMeeting.count({
+        where: {
+          ProjectMeetingMember: {
+            some: {
+              userId: userId,
+            },
+          },
+          name: {
+            mode: 'insensitive',
+            contains: name,
+          },
+          projectId: projectId,
+          method: method,
+        },
+      });
+
+      return {
+        message: 'Project found successfully',
+        error: false,
+        total: total,
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
+  }
+
   async findOne(id: string) {
     try {
       const result = await this.prismaService.projectMeeting.findUnique({
@@ -172,6 +266,63 @@ export class ProjectMeetingService {
           error: true,
         });
       }
+
+      return {
+        message: 'ProjectMeeting found successfully',
+        error: false,
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
+  }
+
+  async findByUser(userId: number) {
+    try {
+      const result = await this.prismaService.projectMeeting.findMany({
+        where: {
+          ProjectMeetingMember: {
+            some: {
+              userId: userId,
+            },
+          },
+        },
+        include: {
+          Project: {
+            select: {
+              id: true,
+              name: true,
+              clientId: true,
+              ProjectClient: {
+                select: {
+                  id: true,
+                  name: true,
+                  code: true,
+                },
+              },
+            },
+          },
+          ProjectMeetingMember: {
+            select: {
+              id: true,
+              userId: true,
+              User: {
+                select: {
+                  id: true,
+                  name: true,
+                  roleId: true,
+                  role: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
 
       return {
         message: 'ProjectMeeting found successfully',
