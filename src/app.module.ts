@@ -24,6 +24,7 @@ import { ProjectTaskModule } from './v1/project/task/project-task.module';
 import { AccessCategoryModulModule } from './v1/setting/access-category-modul/access-category-modul.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ProjectTaskHistoryModule } from './v1/project/task-history/project-task-history.module';
 
 @Module({
   imports: [
@@ -48,17 +49,18 @@ import { join } from 'path';
     }),
 
     // V1 Module
+    AuthModule,
     CategoryModulModule,
     RoleModule,
     UserModule,
     ModulModule,
     MenuModule,
+    AccessCategoryModulModule,
     AccessModulModule,
     AccessMenuModule,
     MasterCategoryModule,
     MasterDataModule,
     ParameterModule,
-    AuthModule,
     ProjectModule,
     ProjectClientModule,
     ProjectMemberModule,
@@ -66,7 +68,7 @@ import { join } from 'path';
     ProjectMeetingModule,
     ProjectMeetingMemberModule,
     ProjectTaskModule,
-    AccessCategoryModulModule,
+    ProjectTaskHistoryModule,
   ],
 })
 export class AppModule {}

@@ -71,6 +71,7 @@ model User {
   ProjectMember        ProjectMember[]
   ProjectMeetingMember ProjectMeetingMember[]
   ProjectTask          ProjectTask[]
+  ProjectTaskHistory   ProjectTaskHistory[]
 
   @@map("users")
 }
@@ -417,5 +418,25 @@ model ProjectTask {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  ProjectTaskHistory ProjectTaskHistory[]
+
   @@map("project_tasks")
+}
+
+model ProjectTaskHistory {
+  id String @id @default(uuid())
+
+  projectTaskId String       @map("project_task_id")
+  ProjectTask   ProjectTask? @relation(fields: [projectTaskId], references: [id], onDelete: Cascade)
+
+  userId Int  @map("user_id")
+  User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  description String?
+  status      ProjectTaskStatusEnum @default(ON_PROGRESS)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("project_task_histories")
 }

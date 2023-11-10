@@ -8,12 +8,14 @@ import {
   Delete,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { prefixProjectUrl } from 'src/utils/constant';
 import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
+import { UserPayloadJWT } from 'src/interface/user_payload_jwt.interface';
 
 @UseGuards(ValidateJWTGuard)
 @Controller(`${prefixProjectUrl}`)
@@ -29,6 +31,22 @@ export class ProjectController {
   findAll(@Query() query: any) {
     const { limit = 100, page = 1, name = undefined } = query;
     return this.projectService.findAll({
+      limit: Number(limit),
+      page: Number(page),
+      name: name,
+    });
+  }
+
+  @Get('me')
+  findAllByMe(@Query() query: any, @Req() req: any) {
+    const { limit = 100, page = 1, name = undefined } = query;
+    const {
+      userPayloadJWT,
+    }: {
+      userPayloadJWT: UserPayloadJWT;
+    } = req;
+
+    return this.projectService.findAllByMe(userPayloadJWT.sub, {
       limit: Number(limit),
       page: Number(page),
       name: name,

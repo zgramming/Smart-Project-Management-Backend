@@ -3,8 +3,8 @@ import { CreateProjectTaskDto } from './dto/create-project-task.dto';
 import { UpdateProjectTaskDto } from './dto/update-project-task.dto';
 import { handlingCustomError } from 'src/utils/function';
 import { PrismaService } from 'src/prisma.service';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
 import { IProjectTaskFindAllQuery } from './query_param/project-task-findall.query';
+import { UpdateStatusProjectTaskDto } from './dto/update-status-project-task.dto';
 
 @Injectable()
 export class ProjectTaskService {
@@ -70,6 +70,14 @@ export class ProjectTaskService {
               },
             },
           },
+          ProjectTaskHistory: {
+            select: {
+              id: true,
+              userId: true,
+              description: true,
+              status: true,
+            },
+          },
           User: {
             select: {
               id: true,
@@ -94,6 +102,96 @@ export class ProjectTaskService {
           },
           projectId: projectId,
           userId: userId,
+          status: status,
+          Project: {
+            clientId: clientId,
+          },
+        },
+      });
+
+      return {
+        error: false,
+        message: `All task has been fetched`,
+        total: total,
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
+  }
+
+  async findAllByMe(idUser: number, params?: IProjectTaskFindAllQuery) {
+    try {
+      const {
+        limit = 100,
+        page = 1,
+        clientId,
+        projectId,
+        status,
+        name,
+      } = params || {};
+      const offset = (page - 1) * limit;
+      const result = await this.prismaService.projectTask.findMany({
+        take: limit,
+        skip: offset,
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+          projectId: projectId,
+          userId: idUser,
+          status: status,
+          Project: {
+            clientId: clientId,
+          },
+        },
+        include: {
+          Project: {
+            select: {
+              id: true,
+              name: true,
+              clientId: true,
+              ProjectClient: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          ProjectTaskHistory: {
+            select: {
+              id: true,
+              userId: true,
+              description: true,
+              status: true,
+            },
+          },
+          User: {
+            select: {
+              id: true,
+              name: true,
+              roleId: true,
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const total = await this.prismaService.projectTask.count({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+          projectId: projectId,
+          userId: idUser,
           status: status,
           Project: {
             clientId: clientId,
@@ -181,6 +279,51 @@ export class ProjectTaskService {
           ...updateProjectTaskDto,
           startDate: new Date(updateProjectTaskDto.startDate),
           endDate: new Date(updateProjectTaskDto.endDate),
+        },
+      });
+
+      return {
+        error: false,
+        message: `Task with id ${id} has been updated`,
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
+  }
+
+  async updateStatus(
+    id: string,
+    userId: number,
+    dto: UpdateStatusProjectTaskDto,
+  ) {
+    try {
+      const task = await this.prismaService.projectTask.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!task) {
+        throw new NotFoundException({
+          error: true,
+          message: `Task with id ${id} not found`,
+        });
+      }
+
+      const result = await this.prismaService.projectTask.update({
+        where: {
+          id: id,
+        },
+        data: {
+          status: dto.status,
+          ProjectTaskHistory: {
+            create: {
+              description: dto.description,
+              status: dto.status,
+              userId: userId,
+            },
+          },
         },
       });
 

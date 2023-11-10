@@ -85,6 +85,69 @@ export class ProjectService {
     }
   }
 
+  async findAllByMe(idUser: number, params?: IProjectFindAllQueryParam) {
+    try {
+      const page = params?.page || 1;
+      const limit = params?.limit || 100;
+      const name = params?.name;
+
+      const offset = (page - 1) * limit;
+      const result = await this.prismaService.project.findMany({
+        take: limit,
+        skip: offset,
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+          ProjectMember: {
+            some: {
+              userId: idUser,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          ProjectClient: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+          ProjectMember: {
+            select: {
+              id: true,
+              userId: true,
+              User: { select: { id: true, name: true } },
+            },
+          },
+        },
+      });
+
+      const total = await this.prismaService.project.count({
+        where: {
+          ProjectMember: {
+            some: {
+              userId: idUser,
+            },
+          },
+        },
+      });
+
+      return {
+        message: 'Projects retrieved successfully',
+        error: false,
+        total: total,
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
+  }
+
   async findOne(id: number) {
     try {
       const result = await this.prismaService.project.findUnique({

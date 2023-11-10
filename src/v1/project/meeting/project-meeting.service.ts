@@ -153,6 +153,9 @@ export class ProjectMeetingService {
           projectId: projectId,
           method: method,
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
         include: {
           Project: {
             select: {

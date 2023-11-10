@@ -7,12 +7,18 @@ import {
   Param,
   Delete,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ProjectTaskService } from './project-task.service';
 import { CreateProjectTaskDto } from './dto/create-project-task.dto';
 import { UpdateProjectTaskDto } from './dto/update-project-task.dto';
 import { prefixProjectTaskUrl } from 'src/utils/constant';
+import { UserPayloadJWT } from 'src/interface/user_payload_jwt.interface';
+import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
+import { UpdateStatusProjectTaskDto } from './dto/update-status-project-task.dto';
 
+@UseGuards(ValidateJWTGuard)
 @Controller(`${prefixProjectTaskUrl}`)
 export class ProjectTaskController {
   constructor(private readonly projectTaskService: ProjectTaskService) {}
@@ -31,6 +37,27 @@ export class ProjectTaskController {
     });
   }
 
+  @Get('me')
+  findAllByMe(@Query() query: any, @Req() req: any) {
+    const {
+      limit = 100,
+      page = 1,
+      name = undefined,
+      clientId = undefined,
+      projectId = undefined,
+      status = undefined,
+    } = query;
+    const { userPayloadJWT }: { userPayloadJWT: UserPayloadJWT } = req;
+    return this.projectTaskService.findAllByMe(userPayloadJWT.sub, {
+      limit: Number(limit),
+      page: Number(page),
+      name,
+      clientId,
+      projectId,
+      status,
+    });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.projectTaskService.findOne(id);
@@ -42,6 +69,20 @@ export class ProjectTaskController {
     @Body() updateProjectTaskDto: UpdateProjectTaskDto,
   ) {
     return this.projectTaskService.update(id, updateProjectTaskDto);
+  }
+
+  @Patch(':id/status')
+  updateAndCreateHistory(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Body() updateStatusProjectTaskDto: UpdateStatusProjectTaskDto,
+  ) {
+    const { userPayloadJWT }: { userPayloadJWT: UserPayloadJWT } = req;
+    return this.projectTaskService.updateStatus(
+      id,
+      userPayloadJWT.sub,
+      updateStatusProjectTaskDto,
+    );
   }
 
   @Delete(':id')
