@@ -73,6 +73,15 @@ export class ProjectController {
     );
   }
 
+  @Get('resume-dashboard/developer')
+  getResumeDashboardDeveloper(@Query() query: any, @Req() req: any) {
+    const { userPayloadJWT }: { userPayloadJWT: UserPayloadJWT } = req;
+    const { year = undefined } = query;
+    return this.projectService.getResumeDashboardDeveloper(userPayloadJWT.sub, {
+      year,
+    });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.projectService.findOne(+id);

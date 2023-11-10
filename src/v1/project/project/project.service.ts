@@ -7,6 +7,7 @@ import { IProjectFindAllQueryParam } from './query_param/project-findall.query';
 import { roleCode } from 'src/utils/constant';
 import { ProjectResumeDashboardOwnerQueryParam } from './query_param/project-resume-dashboard-owner.query';
 import { ProjectResumeDashboardProjectManagerQueryParam } from './query_param/project-resume-dashboard-project-manager.query';
+import { ProjectResumeDashboardDeveloperQueryParam } from './query_param/project-resume-dashboard-developer.query';
 
 @Injectable()
 export class ProjectService {
@@ -338,6 +339,321 @@ export class ProjectService {
         totalMeeting: totalMeeting,
         totalTask: totalTask,
         projectsWillBeEndSoon: projectsWillBeEndSoon,
+      },
+    };
+  }
+
+  async getResumeDashboardDeveloper(
+    userId: number,
+    params?: ProjectResumeDashboardDeveloperQueryParam,
+  ) {
+    // 1. Total Project
+    // 1.1. Total Project ACTIVE
+    // 1.2. Total Project INACTIVE
+    // 1.3. Total Project SUSPEND
+    // 1.4. Total Project FINISH
+    // 2. Total Meeting
+    // 3. Total Task
+    // 3.1. Total Task Status FINISH
+    // 3.2. Total Task Status PENDING
+    // 3.3. Total Task Status ON_PROGRESS
+    // 3.4. Total Task Status NEED HELP
+    // 3.5. Total Task Status CANCEL
+    // 3.6. Total Task Difficulty EASY
+    // 3.7. Total Task Difficulty MEDIUM
+    // 3.8. Total Task Difficulty HARD
+    // 3.9. Total Task Difficulty VERY HARD
+    // 4. Total Client you have worked with
+    // 5. Meeting will be held in the next 7 days
+
+    const now = new Date();
+    const nowPlusSevenDays = new Date(new Date().setDate(now.getDate() + 7));
+    const year = params?.year || new Date().getFullYear();
+
+    const totalProject = await this.prismaService.project.count({
+      where: {
+        ProjectMember: {
+          some: {
+            userId: userId,
+          },
+        },
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalProjectActive = await this.prismaService.project.count({
+      where: {
+        ProjectMember: {
+          some: {
+            userId: userId,
+          },
+        },
+        status: 'ACTIVE',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalProjectInactive = await this.prismaService.project.count({
+      where: {
+        ProjectMember: {
+          some: {
+            userId: userId,
+          },
+        },
+        status: 'INACTIVE',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalProjectSuspend = await this.prismaService.project.count({
+      where: {
+        ProjectMember: {
+          some: {
+            userId: userId,
+          },
+        },
+        status: 'SUSPEND',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalProjectFinish = await this.prismaService.project.count({
+      where: {
+        ProjectMember: {
+          some: {
+            userId: userId,
+          },
+        },
+        status: 'FINISH',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalMeeting = await this.prismaService.projectMeeting.count({
+      where: {
+        ProjectMeetingMember: {
+          some: {
+            userId: userId,
+          },
+        },
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+        startDate: {
+          gte: now,
+          lte: nowPlusSevenDays,
+        },
+      },
+    });
+
+    const totalTask = await this.prismaService.projectTask.count({
+      where: {
+        userId,
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalTaskStatusFinish = await this.prismaService.projectTask.count({
+      where: {
+        userId,
+        status: 'FINISH',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalTaskStatusPending = await this.prismaService.projectTask.count({
+      where: {
+        userId,
+        status: 'PENDING',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalTaskStatusInProgress =
+      await this.prismaService.projectTask.count({
+        where: {
+          userId,
+          status: 'ON_PROGRESS',
+          createdAt: {
+            gte: new Date(`${year}-01-01`),
+            lte: new Date(`${year}-12-31`),
+          },
+        },
+      });
+
+    const totalTaskStatusNeedHelp = await this.prismaService.projectTask.count({
+      where: {
+        userId,
+        status: 'NEED_HELP',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalTaskStatusCancel = await this.prismaService.projectTask.count({
+      where: {
+        userId,
+        status: 'CANCEL',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalTaskDifficultyEasy = await this.prismaService.projectTask.count({
+      where: {
+        userId,
+        degreeOfDifficulty: 'EASY',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalTaskDifficultyMedium =
+      await this.prismaService.projectTask.count({
+        where: {
+          userId,
+          degreeOfDifficulty: 'MEDIUM',
+          createdAt: {
+            gte: new Date(`${year}-01-01`),
+            lte: new Date(`${year}-12-31`),
+          },
+        },
+      });
+
+    const totalTaskDifficultyHard = await this.prismaService.projectTask.count({
+      where: {
+        userId,
+        degreeOfDifficulty: 'HARD',
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalTaskDifficultyVeryHard =
+      await this.prismaService.projectTask.count({
+        where: {
+          userId,
+          degreeOfDifficulty: 'VERY_HARD',
+          createdAt: {
+            gte: new Date(`${year}-01-01`),
+            lte: new Date(`${year}-12-31`),
+          },
+        },
+      });
+
+    const totalClient = await this.prismaService.projectClient.count({
+      where: {
+        Project: {
+          some: {
+            ProjectMember: {
+              some: {
+                userId,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const meetingWillBeHeld = await this.prismaService.projectMeeting.findMany({
+      take: 5,
+      where: {
+        ProjectMeetingMember: {
+          some: {
+            userId: userId,
+          },
+        },
+        startDate: {
+          gte: now,
+          lte: nowPlusSevenDays,
+        },
+      },
+      orderBy: {
+        startDate: 'asc',
+      },
+
+      select: {
+        id: true,
+        name: true,
+        projectId: true,
+        method: true,
+        link: true,
+        startDate: true,
+        endDate: true,
+        status: true,
+
+        Project: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            ProjectClient: {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return {
+      error: false,
+      message: 'Statistic retrieved successfully',
+      data: {
+        totalProject: totalProject,
+        totalProjectActive: totalProjectActive,
+        totalProjectInactive: totalProjectInactive,
+        totalProjectSuspend: totalProjectSuspend,
+        totalProjectFinish: totalProjectFinish,
+        totalMeeting: totalMeeting,
+        totalTask: totalTask,
+        totalTaskStatusFinish: totalTaskStatusFinish,
+        totalTaskStatusPending: totalTaskStatusPending,
+        totalTaskStatusInProgress: totalTaskStatusInProgress,
+        totalTaskStatusNeedHelp: totalTaskStatusNeedHelp,
+        totalTaskStatusCancel: totalTaskStatusCancel,
+        totalTaskDifficultyEasy: totalTaskDifficultyEasy,
+        totalTaskDifficultyMedium: totalTaskDifficultyMedium,
+        totalTaskDifficultyHard: totalTaskDifficultyHard,
+        totalTaskDifficultyVeryHard: totalTaskDifficultyVeryHard,
+        totalClient: totalClient,
+        meetingWillBeHeld: meetingWillBeHeld,
       },
     };
   }
