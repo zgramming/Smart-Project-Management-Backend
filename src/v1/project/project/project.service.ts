@@ -261,6 +261,8 @@ export class ProjectService {
     // 4. Total Task
     // 5. Top 5 Project will be end soon
 
+    const now = new Date();
+    const nowPlusOneMonth = new Date(new Date().setMonth(now.getMonth() + 1));
     const year = params?.year || new Date().getFullYear();
 
     const totalProject = await this.prismaService.project.count({
@@ -308,8 +310,7 @@ export class ProjectService {
     });
 
     // Find Top 5 Project will be end soon 1 month after today
-    const now = new Date();
-    const nowPlusOneMonth = new Date(new Date().setMonth(now.getMonth() + 1));
+
     const projectsWillBeEndSoon = await this.prismaService.project.findMany({
       take: 5,
       where: {

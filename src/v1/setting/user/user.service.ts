@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
 import { encryptPassword, handlingCustomError } from 'src/utils/function';
+import { roleCode } from 'src/utils/constant';
 
 @Injectable()
 export class UserService {
@@ -108,7 +109,7 @@ export class UserService {
     try {
       const role = await this.prisma.role.findMany({
         where: {
-          code: { in: ['DEVELOPER', 'PROYEK_MANAGER'] },
+          code: { in: [roleCode.developer, roleCode.projectManager] },
         },
       });
       const roleIds = role.map((item) => item.id);
