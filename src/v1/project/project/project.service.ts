@@ -4,6 +4,8 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { PrismaService } from 'src/prisma.service';
 import { handlingCustomError } from 'src/utils/function';
 import { IProjectFindAllQueryParam } from './query_param/project-findall.query';
+import { roleCode } from 'src/utils/constant';
+import { ProjectResumeDashboardOwnerQueryParam } from './query_param/project-resume-dashboard-owner.query';
 
 @Injectable()
 export class ProjectService {
@@ -83,6 +85,167 @@ export class ProjectService {
     } catch (error) {
       return handlingCustomError(error);
     }
+  }
+
+  async getResumeDashboardOwner(
+    params?: ProjectResumeDashboardOwnerQueryParam,
+  ) {
+    // 1. Total User Developer
+    // 2. Total User Project Manager
+    // 3. Total Project
+    // 4. Total Client
+    // 5. Total Document
+    // 6. Total Meeting
+    // 7. Total Task
+
+    const year = params?.year || new Date().getFullYear();
+
+    const totalUserDeveloper = await this.prismaService.user.count({
+      where: {
+        role: { code: roleCode.developer },
+      },
+    });
+
+    const totalUserProjectManager = await this.prismaService.user.count({
+      where: {
+        role: { code: roleCode.projectManager },
+      },
+    });
+
+    const totalProject = await this.prismaService.project.count({
+      where: {
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalClient = await this.prismaService.projectClient.count({
+      where: {
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalDocument = await this.prismaService.projectDocument.count({
+      where: {
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalMeeting = await this.prismaService.projectMeeting.count({
+      where: {
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalTask = await this.prismaService.projectTask.count({
+      where: {
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const statisticDeveloper = await this.prismaService.user.findMany({
+      take: 5,
+      where: {
+        role: { code: roleCode.developer },
+      },
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: {
+            ProjectMember: true,
+            ProjectTask: true,
+          },
+        },
+      },
+    });
+
+    const mappingStatisticDeveloper = statisticDeveloper.map((value) => ({
+      id: value.id,
+      name: value.name,
+      totalTask: value._count.ProjectTask,
+      totalProject: value._count.ProjectMember,
+    }));
+
+    const statisticProjectManager = await this.prismaService.user.findMany({
+      take: 5,
+      where: {
+        role: { code: roleCode.projectManager },
+      },
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: {
+            ProjectMember: true,
+            ProjectMeetingMember: true,
+          },
+        },
+      },
+    });
+
+    const mappingStatisticProjectManager = statisticProjectManager.map(
+      (value) => ({
+        id: value.id,
+        name: value.name,
+        totalProject: value._count.ProjectMember,
+        totalMeeting: value._count.ProjectMeetingMember,
+      }),
+    );
+
+    const recentProject = await this.prismaService.project.findMany({
+      take: 5,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        ProjectClient: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        ProjectMember: {
+          select: {
+            id: true,
+            userId: true,
+            User: { select: { id: true, name: true } },
+          },
+        },
+      },
+    });
+
+    return {
+      error: false,
+      message: 'Statistic retrieved successfully',
+      data: {
+        totalUserDeveloper: totalUserDeveloper,
+        totalUserProjectManager: totalUserProjectManager,
+        totalProject: totalProject,
+        totalClient: totalClient,
+        totalDocument: totalDocument,
+        totalMeeting: totalMeeting,
+        totalTask: totalTask,
+        statisticDeveloper: mappingStatisticDeveloper,
+        statisticProjectManager: mappingStatisticProjectManager,
+        recentProject: recentProject,
+      },
+    };
   }
 
   async findAllByMe(idUser: number, params?: IProjectFindAllQueryParam) {

@@ -53,6 +53,14 @@ export class ProjectController {
     });
   }
 
+  @Get('resume-dashboard/owner')
+  getResumeDashboardOwner(@Query() query: any) {
+    const { year = undefined } = query;
+    return this.projectService.getResumeDashboardOwner({
+      year,
+    });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.projectService.findOne(+id);

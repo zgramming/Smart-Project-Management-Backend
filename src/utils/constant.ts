@@ -8,6 +8,13 @@ export const prefixProjectMeetingUrl = `${prefixUrl}/project-meeting`;
 export const prefixProjectTaskUrl = `${prefixUrl}/project-task`;
 export const prefixProjectTaskHistoryUrl = `${prefixUrl}/project-task-history`;
 
+export const roleCode = {
+  developer: 'DEVELOPER',
+  projectManager: 'PROJECT_MANAGER',
+  admin: 'ADMIN',
+  owner: 'OWNER',
+};
+
 export const pathUploadDocument = 'uploads/document';
 
 export const jwtConstants = {

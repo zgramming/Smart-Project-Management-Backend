@@ -8,19 +8,6 @@ import {
   ValidateIf,
 } from 'class-validator';
 
-// class ProjectTaskHistory {
-//   @Transform(({ value }) => Number(value))
-//   @IsNumber()
-//   userId: number;
-
-//   @IsNotEmpty()
-//   description: string;
-
-//   @IsNotEmpty()
-//   @IsEnum(ProjectTaskStatusEnum)
-//   status: ProjectTaskStatusEnum;
-// }
-
 export class CreateProjectTaskDto {
   @IsNumber()
   userId: number;
