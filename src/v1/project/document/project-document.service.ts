@@ -24,6 +24,9 @@ export class ProjectDocumentService {
         const create = await this.prismaService.projectDocument.create({
           data: {
             name: createProjectDocumentDto.name,
+            createdBy: createProjectDocumentDto.createdBy,
+            description: createProjectDocumentDto.description,
+            status: createProjectDocumentDto.status,
             file: '',
             projectId: createProjectDocumentDto.projectId,
           },

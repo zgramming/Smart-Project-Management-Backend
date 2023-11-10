@@ -12,6 +12,9 @@ class ProjectMember {
   @IsNumber()
   userId: number;
 
+  @IsNumber()
+  createdBy: number;
+
   status?: ActiveStatusEnum;
 }
 
@@ -32,6 +35,9 @@ export class CreateProjectDto {
   endDate: Date;
 
   status?: ProjectStatusEnum;
+
+  @IsNumber()
+  createdBy: number;
 
   @IsArray({ message: `Project Member must be an array` })
   @ValidateNested({

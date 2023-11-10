@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateProjectClientDto {
   @IsString()
@@ -8,4 +8,7 @@ export class CreateProjectClientDto {
   code: string;
 
   description?: string;
+
+  @IsNumber()
+  createdBy: number;
 }

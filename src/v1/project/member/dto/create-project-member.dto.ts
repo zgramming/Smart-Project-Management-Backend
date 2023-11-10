@@ -14,6 +14,9 @@ class Values {
   @IsNumber()
   userId: number;
 
+  @IsNumber()
+  createdBy: number;
+
   status?: ActiveStatusEnum;
 }
 

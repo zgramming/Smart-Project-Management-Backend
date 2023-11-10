@@ -14,6 +14,14 @@ const encryptPassword = async (password: string) => {
 
 const prisma = new PrismaClient();
 
+const IDUser = {
+  SUPERADMIN: 1,
+  ADMIN: 2,
+  DEVELOPER: 3,
+  PROJECT_MANAGER: 4,
+  OWNER: 5,
+};
+
 const IDRole = {
   SUPERADMIN: 1,
   ADMIN: 2,
@@ -562,15 +570,82 @@ const accessMenuSeeder = async ({ onlyTruncate = false }: SeederType) => {
   });
 };
 
-const projectClientSeeder = async () => {
+const projectSeeder = async ({ onlyTruncate = false }: SeederType) => {
+  // Delete all data
+  await prisma.project.deleteMany();
+
+  if (onlyTruncate) {
+    return;
+  }
+
+  const now = new Date();
+  const nowPlusOneMonth = new Date(now.setMonth(now.getMonth() + 1));
+  const nowPlusTwoMonth = new Date(now.setMonth(now.getMonth() + 2));
+  const result = await prisma.project.createMany({
+    data: [
+      {
+        id: 1,
+        clientId: '1',
+        code: 'PRJ_1',
+        name: 'Project 1',
+        startDate: new Date(),
+        endDate: nowPlusOneMonth,
+        createdBy: IDUser.PROJECT_MANAGER,
+      },
+      {
+        id: 2,
+        clientId: '1',
+        code: 'PRJ_2',
+        name: 'Project 2',
+        startDate: new Date(),
+        endDate: nowPlusTwoMonth,
+        createdBy: IDUser.PROJECT_MANAGER,
+      },
+      {
+        id: 3,
+        clientId: '2',
+        code: 'PRJ_3',
+        name: 'Project 3',
+        startDate: new Date(),
+        endDate: nowPlusOneMonth,
+        createdBy: IDUser.PROJECT_MANAGER,
+      },
+    ],
+  });
+
+  console.log({
+    seederProject: result,
+  });
+};
+
+const projectClientSeeder = async ({ onlyTruncate = false }: SeederType) => {
   // Delete all data
   await prisma.projectClient.deleteMany();
 
+  if (onlyTruncate) {
+    return;
+  }
+
   const result = await prisma.projectClient.createMany({
     data: [
-      { id: '1', code: 'CLT_1', name: 'PT. ABC' },
-      { id: '2', code: 'CLT_2', name: 'PT. DEF' },
-      { id: '3', code: 'CLT_3', name: 'PT. GHI' },
+      {
+        id: '1',
+        code: 'CLT_1',
+        name: 'PT. ABC',
+        createdBy: IDUser.PROJECT_MANAGER,
+      },
+      {
+        id: '2',
+        code: 'CLT_2',
+        name: 'PT. DEF',
+        createdBy: IDUser.PROJECT_MANAGER,
+      },
+      {
+        id: '3',
+        code: 'CLT_3',
+        name: 'PT. GHI',
+        createdBy: IDUser.PROJECT_MANAGER,
+      },
     ],
   });
 
@@ -582,6 +657,9 @@ const projectClientSeeder = async () => {
 const main = async () => {
   const onlyTruncate = false;
   try {
+    // Disable foreign key check postgresql
+    // await prisma.$executeRaw`SET session_replication_role = 'replica';`;
+
     // Execute seeders
     await roleSeeder({ onlyTruncate });
     await userSeeder({ onlyTruncate });
@@ -593,7 +671,15 @@ const main = async () => {
     await accessMenuSeeder({ onlyTruncate });
 
     // Start Project Seeder
-    await projectClientSeeder();
+    await projectClientSeeder({
+      onlyTruncate,
+    });
+    await projectSeeder({
+      onlyTruncate,
+    });
+
+    // Enable foreign key check postgresql
+    // await prisma.$executeRaw`SET session_replication_role = 'origin';`;
   } catch (error) {
     console.log({
       error,

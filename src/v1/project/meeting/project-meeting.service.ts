@@ -21,6 +21,7 @@ export class ProjectMeetingService {
           status: createProjectMeetingDto.status,
           startDate: new Date(createProjectMeetingDto.startDate),
           endDate: new Date(createProjectMeetingDto.endDate),
+          createdBy: createProjectMeetingDto.createdBy,
           ProjectMeetingMember: {
             createMany: {
               data: createProjectMeetingDto.members,

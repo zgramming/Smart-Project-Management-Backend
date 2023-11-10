@@ -35,4 +35,7 @@ export class CreateProjectTaskDto {
   @ValidateIf((o) => o.status !== undefined)
   @IsEnum(ProjectTaskStatusEnum)
   status?: ProjectTaskStatusEnum;
+
+  @IsNumber()
+  createdBy: number;
 }

@@ -6,6 +6,7 @@ import { handlingCustomError } from 'src/utils/function';
 import { IProjectFindAllQueryParam } from './query_param/project-findall.query';
 import { roleCode } from 'src/utils/constant';
 import { ProjectResumeDashboardOwnerQueryParam } from './query_param/project-resume-dashboard-owner.query';
+import { ProjectResumeDashboardProjectManagerQueryParam } from './query_param/project-resume-dashboard-project-manager.query';
 
 @Injectable()
 export class ProjectService {
@@ -14,6 +15,7 @@ export class ProjectService {
     try {
       const result = await this.prismaService.project.create({
         data: {
+          createdBy: createProjectDto.createdBy,
           clientId: createProjectDto.clientId,
           name: createProjectDto.name,
           code: createProjectDto.code,
@@ -24,6 +26,7 @@ export class ProjectService {
             createMany: {
               data: createProjectDto.members.map((value) => ({
                 userId: value.userId,
+                createdBy: value.createdBy,
               })),
             },
           },
@@ -248,6 +251,96 @@ export class ProjectService {
     };
   }
 
+  async getResumeDashboardProjectManager(
+    userId: number,
+    params?: ProjectResumeDashboardProjectManagerQueryParam,
+  ) {
+    // 1. Total Project
+    // 2. Total Document
+    // 3. Total Meeting
+    // 4. Total Task
+    // 5. Top 5 Project will be end soon
+
+    const year = params?.year || new Date().getFullYear();
+
+    const totalProject = await this.prismaService.project.count({
+      where: {
+        ProjectMember: {
+          some: {
+            userId: userId,
+          },
+        },
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalDocument = await this.prismaService.projectDocument.count({
+      where: {
+        createdBy: userId,
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalMeeting = await this.prismaService.projectMeeting.count({
+      where: {
+        createdBy: userId,
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const totalTask = await this.prismaService.projectTask.count({
+      where: {
+        createdBy: userId,
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    // Find Top 5 Project will be end soon 1 month after today
+    const now = new Date();
+    const nowPlusOneMonth = new Date(new Date().setMonth(now.getMonth() + 1));
+    const projectsWillBeEndSoon = await this.prismaService.project.findMany({
+      take: 5,
+      where: {
+        ProjectMember: {
+          some: {
+            userId: userId,
+          },
+        },
+        endDate: {
+          gte: now,
+          lte: nowPlusOneMonth,
+        },
+      },
+      orderBy: {
+        endDate: 'asc',
+      },
+    });
+
+    return {
+      error: false,
+      message: 'Statistic retrieved successfully',
+      data: {
+        totalProject: totalProject,
+        totalDocument: totalDocument,
+        totalMeeting: totalMeeting,
+        totalTask: totalTask,
+        projectsWillBeEndSoon: projectsWillBeEndSoon,
+      },
+    };
+  }
+
   async findAllByMe(idUser: number, params?: IProjectFindAllQueryParam) {
     try {
       const page = params?.page || 1;
@@ -404,6 +497,7 @@ export class ProjectService {
             projectId: id,
             userId: value.userId,
             status: value.status,
+            createdBy: value.createdBy,
           })),
         });
 

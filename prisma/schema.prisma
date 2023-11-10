@@ -73,6 +73,19 @@ model User {
   ProjectTask          ProjectTask[]
   ProjectTaskHistory   ProjectTaskHistory[]
 
+  ProjectCreatedBy         Project[]         @relation("ProjectCreatedBy")
+  ProjectUpdatedBy         Project[]         @relation("ProjectUpdatedBy")
+  ProjectClientCreatedBy   ProjectClient[]   @relation("ProjectClientCreatedBy")
+  ProjectClientUpdatedBy   ProjectClient[]   @relation("ProjectClientUpdatedBy")
+  ProjectMemberCreatedBy   ProjectMember[]   @relation("ProjectMemberCreatedBy")
+  ProjectMemberUpdatedBy   ProjectMember[]   @relation("ProjectMemberUpdatedBy")
+  ProjectDocumentCreatedBy ProjectDocument[] @relation("ProjectDocumentCreatedBy")
+  ProjectDocumentUpdatedBy ProjectDocument[] @relation("ProjectDocumentUpdatedBy")
+  ProjectMeetingCreatedBy  ProjectMeeting[]  @relation("ProjectMeetingCreatedBy")
+  ProjectMeetingUpdatedBy  ProjectMeeting[]  @relation("ProjectMeetingUpdatedBy")
+  ProjectTaskCreatedBy     ProjectTask[]     @relation("ProjectTaskCreatedBy")
+  ProjectTaskUpdatedBy     ProjectTask[]     @relation("ProjectTaskUpdatedBy")
+
   @@map("users")
 }
 
@@ -292,13 +305,19 @@ model Project {
   id Int @id @default(autoincrement())
 
   clientId      String        @map("client_id")
-  ProjectClient ProjectClient @relation(fields: [clientId], references: [id])
+  ProjectClient ProjectClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   name      String
   code      String            @unique
   startDate DateTime          @map("start_date") @db.Date()
   endDate   DateTime          @map("end_date") @db.Date()
   status    ProjectStatusEnum @default(ACTIVE)
+
+  createdBy        Int  @map("created_by")
+  ProjectCreatedBy User @relation(name: "ProjectCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  updatedBy        Int?  @map("updated_by")
+  ProjectUpdatedBy User? @relation(name: "ProjectUpdatedBy", fields: [updatedBy], references: [id], onDelete: Cascade)
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -316,8 +335,15 @@ model ProjectClient {
   id String @id @default(uuid())
 
   name        String
-  code        String  @unique
+  code        String           @unique
   description String?
+  status      ActiveStatusEnum @default(ACTIVE)
+
+  createdBy              Int  @map("created_by")
+  ProjectClientCreatedBy User @relation(name: "ProjectClientCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  updatedBy              Int?  @map("updated_by")
+  ProjectClientUpdatedBy User? @relation(name: "ProjectClientUpdatedBy", fields: [updatedBy], references: [id], onDelete: Cascade)
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -335,9 +361,15 @@ model ProjectMember {
   Project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   userId Int  @map("user_id")
-  User   User @relation(fields: [userId], references: [id])
+  User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   status ActiveStatusEnum @default(ACTIVE)
+
+  createdBy              Int  @map("created_by")
+  ProjectMemberCreatedBy User @relation(name: "ProjectMemberCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  updatedBy              Int?  @map("updated_by")
+  ProjectMemberUpdatedBy User? @relation(name: "ProjectMemberUpdatedBy", fields: [updatedBy], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -356,6 +388,12 @@ model ProjectDocument {
   description String?
   status      ActiveStatusEnum @default(ACTIVE)
 
+  createdBy                Int  @map("created_by")
+  ProjectDocumentCreatedBy User @relation(name: "ProjectDocumentCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  updatedBy                Int?  @map("updated_by")
+  ProjectDocumentUpdatedBy User? @relation(name: "ProjectDocumentUpdatedBy", fields: [updatedBy], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -370,11 +408,17 @@ model ProjectMeeting {
 
   name        String
   description String?
-  startDate   DateTime          @map("start_date") @db.Date()
-  endDate     DateTime          @map("end_date") @db.Date()
+  startDate   DateTime          @map("start_date")
+  endDate     DateTime          @map("end_date")
   method      MeetingMethodEnum @default(ONLINE)
   link        String
   status      ActiveStatusEnum  @default(ACTIVE)
+
+  createdBy               Int  @map("created_by")
+  ProjectMeetingCreatedBy User @relation(name: "ProjectMeetingCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  updatedBy               Int?  @map("updated_by")
+  ProjectMeetingUpdatedBy User? @relation(name: "ProjectMeetingUpdatedBy", fields: [updatedBy], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -414,6 +458,12 @@ model ProjectTask {
   endDate            DateTime               @map("end_date")
   degreeOfDifficulty DegreeOfDifficultyEnum @default(EASY) @map("degree_of_difficulty")
   status             ProjectTaskStatusEnum  @default(ON_PROGRESS)
+
+  createdBy            Int  @map("created_by")
+  ProjectTaskCreatedBy User @relation(name: "ProjectTaskCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
+
+  updatedBy            Int?  @map("updated_by")
+  ProjectTaskUpdatedBy User? @relation(name: "ProjectTaskUpdatedBy", fields: [updatedBy], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

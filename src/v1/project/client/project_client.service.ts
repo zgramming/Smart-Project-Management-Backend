@@ -11,7 +11,9 @@ export class ProjectClientService {
   async create(createProjectClientDto: CreateProjectClientDto) {
     try {
       const result = await this.prismaService.projectClient.create({
-        data: createProjectClientDto,
+        data: {
+          ...createProjectClientDto,
+        },
       });
 
       return {

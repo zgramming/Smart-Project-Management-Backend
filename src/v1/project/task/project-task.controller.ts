@@ -24,7 +24,15 @@ export class ProjectTaskController {
   constructor(private readonly projectTaskService: ProjectTaskService) {}
 
   @Post()
-  create(@Body() createProjectTaskDto: CreateProjectTaskDto) {
+  create(@Body() createProjectTaskDto: CreateProjectTaskDto, @Req() req: any) {
+    const {
+      userPayloadJWT,
+    }: {
+      userPayloadJWT: UserPayloadJWT;
+    } = req;
+
+    createProjectTaskDto.createdBy = userPayloadJWT.sub;
+
     return this.projectTaskService.create(createProjectTaskDto);
   }
 

@@ -48,6 +48,9 @@ export class CreateProjectMeetingDto {
   @IsEnum(ActiveStatusEnum)
   status?: ActiveStatusEnum;
 
+  @IsNumber()
+  createdBy: number;
+
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
