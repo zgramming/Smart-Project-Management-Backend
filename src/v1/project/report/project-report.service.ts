@@ -9,133 +9,48 @@ import { ProjectReportGenerateOwnerQueryParam } from './query-param/project-repo
 import { ProjectReportGenerateDeveloperQueryParam } from './query-param/project-report-generate-developer.query';
 import { ProjectReportGenerateProjectManagerQueryParam } from './query-param/project-report-generate-project-manager.query copy 2';
 
-interface CreateTableExcelProps {
-  worksheetName?: string;
-  worksheetTableName?: string;
-  // Dont use space for displayName, it will throw warning when opening the file. Please see this issue in https://github.com/exceljs/exceljs/issues/106
-  worksheetTableDisplayName?: string;
-  // Dont include extension inside filename, it already set to .xlsx
-  filename?: string;
-  columns: ExcelJS.TableColumnProperties[];
-  rows: any[][];
-}
+// interface CreateTableExcelProps {
+//   worksheetName?: string;
+//   worksheetTableName?: string;
+//   // Dont use space for displayName, it will throw warning when opening the file. Please see this issue in https://github.com/exceljs/exceljs/issues/106
+//   worksheetTableDisplayName?: string;
+//   // Dont include extension inside filename, it already set to .xlsx
+//   filename?: string;
+//   columns: ExcelJS.TableColumnProperties[];
+//   rows: any[][];
+// }
 
 @Injectable()
 export class ProjectReportService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  private async createTableExcel({
-    columns,
-    rows,
-    filename,
-    worksheetName = 'sheet1',
-    worksheetTableName = 'MyTable',
-    worksheetTableDisplayName = 'report',
-  }: CreateTableExcelProps) {
-    const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'Zeffry Reynando';
-    workbook.created = new Date();
-    workbook.modified = new Date();
-    workbook.lastModifiedBy = 'Zeffry Reynando';
-    workbook.lastPrinted = new Date();
-
-    const worksheet = workbook.addWorksheet(worksheetName);
-
-    worksheet.addTable({
-      name: worksheetTableName,
-      ref: 'A1',
-      headerRow: true,
-      displayName: worksheetTableDisplayName,
-      // style: {
-      //   showColumnStripes: true,
-      //   showFirstColumn: true,
-      //   showLastColumn: true,
-      //   showRowStripes: true,
-      //   theme: 'TableStyleLight1',
-      // },
-      columns: columns,
-      rows: rows,
-    });
-
+  private async createFileExcel(workbook: ExcelJS.Workbook, filename: string) {
+    const ext = '.xlsx';
     const now = new Date();
     const nowAsString = now.toISOString().replace(/:/g, '-');
-    const generateFilename = filename || `report-${nowAsString}`;
-    const fullPath = `${pathReportExcel}/${generateFilename}.xlsx`;
+    const generateFilename = `${filename}-${nowAsString}${ext}`;
+    const relativePath = `${pathReportExcel}/${generateFilename}`;
     const isDirExist = fs.existsSync(pathReportExcel);
 
     if (!isDirExist) {
       fs.mkdirSync(pathReportExcel, { recursive: true });
     }
 
-    await workbook.xlsx.writeFile(fullPath);
+    await workbook.xlsx.writeFile(relativePath);
+    const fullPath = `${process.cwd()}/${relativePath}`;
 
-    return fullPath;
+    return {
+      relativePath,
+      fullPath,
+      nameFile: generateFilename,
+    };
   }
 
   async findAll() {
     try {
-      const pathExcel = await this.createTableExcel({
-        columns: [
-          { name: 'No', filterButton: true },
-          { name: 'Client', filterButton: true },
-          { name: 'Project', filterButton: true },
-          { name: 'Name', filterButton: true },
-          { name: 'Start Date', filterButton: true },
-          { name: 'End Date', filterButton: true },
-          { name: 'Status', filterButton: true },
-        ],
-        rows: [
-          [
-            1,
-            'Client 1',
-            'Project 1',
-            'Name 1',
-            '2021-01-01',
-            '2021-01-01',
-            'Status 1',
-          ],
-          [
-            2,
-            'Client 2',
-            'Project 2',
-            'Name 2',
-            '2021-01-01',
-            '2021-01-01',
-            'Status 2',
-          ],
-          [
-            3,
-            'Client 3',
-            'Project 3',
-            'Name 3',
-            '2021-01-01',
-            '2021-01-01',
-            'Status 3',
-          ],
-          [
-            4,
-            'Client 4',
-            'Project 4',
-            'Name 4',
-            '2021-01-01',
-            '2021-01-01',
-            'Status 4',
-          ],
-          [
-            5,
-            'Client 5',
-            'Project 5',
-            'Name 5',
-            '2021-01-01',
-            '2021-01-01',
-            'Status 5',
-          ],
-        ],
-      });
       return {
         error: false,
         message: 'Success',
-        data: pathExcel,
       };
     } catch (error) {
       return handlingCustomError(error);
@@ -346,25 +261,16 @@ export class ProjectReportService {
           ],
     });
 
-    const ext = '.xlsx';
-    const now = new Date();
-    const nowAsString = now.toISOString().replace(/:/g, '-');
-    const generateFilename = `report-project-manager-${nowAsString}${ext}`;
-    const fullPath = `${pathReportExcel}/${generateFilename}`;
-    const isDirExist = fs.existsSync(pathReportExcel);
-
-    if (!isDirExist) {
-      fs.mkdirSync(pathReportExcel, { recursive: true });
-    }
-
-    await workbook.xlsx.writeFile(fullPath);
-    const mappingFullPath = `${process.cwd()}/${fullPath}`;
+    const { fullPath, nameFile, relativePath } = await this.createFileExcel(
+      workbook,
+      'report-project-manager',
+    );
     return {
       error: false,
       message: 'Success generate report project manager excel',
-      name: generateFilename,
-      relativePath: fullPath,
-      fullPath: mappingFullPath,
+      relativePath,
+      name: nameFile,
+      fullPath,
     };
   }
 
@@ -600,27 +506,16 @@ export class ProjectReportService {
           ],
     });
 
-    const ext = '.xlsx';
-    const now = new Date();
-    const nowAsString = now.toISOString().replace(/:/g, '-');
-    const generateFilename = `report-developer-${nowAsString}${ext}`;
-    const fullPath = `${pathReportExcel}/${generateFilename}`;
-    const isDirExist = fs.existsSync(pathReportExcel);
-
-    if (!isDirExist) {
-      fs.mkdirSync(pathReportExcel, { recursive: true });
-    }
-
-    await workbook.xlsx.writeFile(fullPath);
-
-    const mappingFullPath = `${process.cwd()}/${fullPath}`;
-
+    const { fullPath, nameFile, relativePath } = await this.createFileExcel(
+      workbook,
+      'report-developer',
+    );
     return {
       error: false,
       message: 'Success generate report developer excel',
-      name: generateFilename,
-      relativePath: fullPath,
-      fullPath: mappingFullPath,
+      relativePath,
+      name: nameFile,
+      fullPath,
     };
   }
 
@@ -976,27 +871,16 @@ export class ProjectReportService {
           ],
     });
 
-    const ext = '.xlsx';
-    const now = new Date();
-    const nowAsString = now.toISOString().replace(/:/g, '-');
-    const generateFilename = `report-owner-${nowAsString}${ext}`;
-    const fullPath = `${pathReportExcel}/${generateFilename}`;
-    const isDirExist = fs.existsSync(pathReportExcel);
-
-    if (!isDirExist) {
-      fs.mkdirSync(pathReportExcel, { recursive: true });
-    }
-
-    await workbook.xlsx.writeFile(fullPath);
-
-    const mappingFullPath = `${process.cwd()}/${fullPath}`;
-
+    const { fullPath, nameFile, relativePath } = await this.createFileExcel(
+      workbook,
+      'report-owner',
+    );
     return {
       error: false,
       message: 'Success generate report owner excel',
-      name: generateFilename,
-      relativePath: fullPath,
-      fullPath: mappingFullPath,
+      relativePath,
+      name: nameFile,
+      fullPath,
     };
   }
 }
