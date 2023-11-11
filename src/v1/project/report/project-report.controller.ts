@@ -57,4 +57,22 @@ export class ProjectReportController {
 
     return result;
   }
+
+  @Post('owner')
+  @HttpCode(200)
+  async findAllOwner(@Query() query: any, @Req() req: any) {
+    const { year } = query;
+    const {
+      userPayloadJWT,
+    }: {
+      userPayloadJWT: UserPayloadJWT;
+    } = req;
+
+    const result = await this.projectReportService.generateReportOwner(
+      userPayloadJWT.sub,
+      year,
+    );
+
+    return result;
+  }
 }
