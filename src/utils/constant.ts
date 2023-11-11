@@ -7,6 +7,7 @@ export const prefixProjectDocumentUrl = `${prefixUrl}/project-document`;
 export const prefixProjectMeetingUrl = `${prefixUrl}/project-meeting`;
 export const prefixProjectTaskUrl = `${prefixUrl}/project-task`;
 export const prefixProjectTaskHistoryUrl = `${prefixUrl}/project-task-history`;
+export const prefixProjectReportUrl = `${prefixUrl}/project-report`;
 
 export const roleCode = {
   developer: 'DEVELOPER',
@@ -16,6 +17,7 @@ export const roleCode = {
 };
 
 export const pathUploadDocument = 'uploads/document';
+export const pathReportExcel = 'uploads/report';
 
 export const jwtConstants = {
   secret: process.env.JWT_SECRET_KEY,

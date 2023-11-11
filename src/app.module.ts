@@ -25,6 +25,7 @@ import { AccessCategoryModulModule } from './v1/setting/access-category-modul/ac
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ProjectTaskHistoryModule } from './v1/project/task-history/project-task-history.module';
+import { ProjectReportModule } from './v1/project/report/project-report.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { ProjectTaskHistoryModule } from './v1/project/task-history/project-task
     ProjectMeetingMemberModule,
     ProjectTaskModule,
     ProjectTaskHistoryModule,
+    ProjectReportModule,
   ],
 })
 export class AppModule {}
