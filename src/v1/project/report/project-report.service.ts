@@ -7,7 +7,7 @@ import { pathReportExcel, roleCode } from 'src/utils/constant';
 import { handlingCustomError } from 'src/utils/function';
 import { ProjectReportGenerateOwnerQueryParam } from './query-param/project-report-generate-owner.query';
 import { ProjectReportGenerateDeveloperQueryParam } from './query-param/project-report-generate-developer.query';
-import { ProjectReportGenerateProjectManagerQueryParam } from './query-param/project-report-generate-project-manager.query copy 2';
+import { ProjectReportGenerateProjectManagerQueryParam } from './query-param/project-report-generate-project-manager.query';
 
 // interface CreateTableExcelProps {
 //   worksheetName?: string;
