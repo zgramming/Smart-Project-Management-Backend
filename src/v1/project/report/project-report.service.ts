@@ -5,7 +5,8 @@ import * as fs from 'fs';
 import * as ExcelJS from 'exceljs';
 import { pathReportExcel } from 'src/utils/constant';
 import { handlingCustomError } from 'src/utils/function';
-import { ProjectReportGenerateProjectManagerQuery } from './query-param/project-report-generate-project-manager.query';
+import { ProjectReportGenerateProjectManagerQueryParam } from './query-param/project-report-generate-project-manager.query copy';
+import { ProjectReportGenerateDeveloperQueryParam } from './query-param/project-report-generate-developer.query';
 
 interface CreateTableExcelProps {
   worksheetName?: string;
@@ -142,7 +143,7 @@ export class ProjectReportService {
 
   async generateReportProjectManager(
     userId: number,
-    params?: ProjectReportGenerateProjectManagerQuery,
+    params?: ProjectReportGenerateProjectManagerQueryParam,
   ) {
     const year = params?.year || new Date().getFullYear();
     const workbook = new ExcelJS.Workbook();
@@ -360,6 +361,262 @@ export class ProjectReportService {
     return {
       error: false,
       message: 'Success generate report project manager excel',
+      name: generateFilename,
+      relativePath: fullPath,
+      fullPath: mappingFullPath,
+    };
+  }
+
+  async generateReportDeveloper(
+    userId: number,
+    params?: ProjectReportGenerateDeveloperQueryParam,
+  ) {
+    const year = params?.year || new Date().getFullYear();
+    const workbook = new ExcelJS.Workbook();
+
+    const sheetTask = workbook.addWorksheet('Task Assigned To Me');
+
+    const tasks = await this.prismaService.projectTask.findMany({
+      include: {
+        Project: {
+          include: { ProjectClient: true },
+        },
+        User: true,
+      },
+      where: {
+        userId: userId,
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const isTasksEmpty = tasks.length === 0;
+    const emptyArrayTask = [['', '', '', '', '', '', '', '', '', '', '']];
+
+    sheetTask.addTable({
+      name: 'taskTable',
+      ref: 'A1',
+      headerRow: true,
+      displayName: 'Task',
+      columns: [
+        { name: 'No', filterButton: true },
+        { name: 'Client', filterButton: true },
+        { name: 'Project', filterButton: true },
+        { name: 'Assign To', filterButton: true },
+        { name: 'Name', filterButton: true },
+        { name: 'Start Date', filterButton: true },
+        { name: 'End Date', filterButton: true },
+        { name: 'Difficulty', filterButton: true },
+        { name: 'Status', filterButton: true },
+        { name: 'Created At', filterButton: true },
+        { name: 'Updated At', filterButton: true },
+      ],
+      rows: isTasksEmpty
+        ? emptyArrayTask
+        : [
+            ...tasks.map((task, index) => [
+              index + 1,
+              task.Project.ProjectClient.name,
+              task.Project.name,
+              task.User.name,
+              task.name,
+              task.startDate,
+              task.endDate,
+              task.degreeOfDifficulty,
+              task.status,
+              task.createdAt,
+              task.updatedAt,
+            ]),
+          ],
+    });
+
+    const sheetProject = workbook.addWorksheet('Project i am in');
+
+    const projects = await this.prismaService.project.findMany({
+      include: {
+        ProjectClient: true,
+      },
+      where: {
+        ProjectMember: {
+          some: {
+            userId: userId,
+          },
+        },
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const isProjectsEmpty = projects.length === 0;
+    const emptyArray = [['', '', '', '', '', '']];
+    sheetProject.addTable({
+      name: 'projectTable',
+      ref: 'A1',
+      headerRow: true,
+      displayName: 'Project',
+      columns: [
+        { name: 'No', filterButton: true },
+        { name: 'Client', filterButton: true },
+        { name: 'Name', filterButton: true },
+        { name: 'Code', filterButton: true },
+        { name: 'Status', filterButton: true },
+        { name: 'Created At', filterButton: true },
+        { name: 'Updated At', filterButton: true },
+      ],
+      rows: isProjectsEmpty
+        ? // We need to add empty array if there is no data, because it will throw error if we dont add empty array
+          emptyArray
+        : [
+            ...projects.map((project, index) => [
+              index + 1,
+              project.ProjectClient.name,
+              project.name,
+              project.code,
+              project.status,
+              project.createdAt,
+              project.updatedAt,
+            ]),
+          ],
+    });
+
+    const sheetMeeting = workbook.addWorksheet('Meeting i involved');
+
+    const meetings = await this.prismaService.projectMeeting.findMany({
+      include: {
+        Project: {
+          include: { ProjectClient: true },
+        },
+      },
+      where: {
+        Project: {
+          ProjectMember: {
+            some: {
+              userId: userId,
+            },
+          },
+        },
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const isMeetingsEmpty = meetings.length === 0;
+    const emptyArrayMeeting = [['', '', '', '', '', '', '']];
+
+    sheetMeeting.addTable({
+      name: 'meetingTable',
+      ref: 'A1',
+      headerRow: true,
+      displayName: 'Meeting',
+      columns: [
+        { name: 'No', filterButton: true },
+        { name: 'Client', filterButton: true },
+        { name: 'Project', filterButton: true },
+        { name: 'Name', filterButton: true },
+        { name: 'Description', filterButton: true },
+        { name: 'Start Date', filterButton: true },
+        { name: 'End Date', filterButton: true },
+        { name: 'Status', filterButton: true },
+        { name: 'Method', filterButton: true },
+        { name: 'Created At', filterButton: true },
+        { name: 'Updated At', filterButton: true },
+      ],
+      rows: isMeetingsEmpty
+        ? emptyArrayMeeting
+        : [
+            ...meetings.map((meeting, index) => [
+              index + 1,
+              meeting.Project.ProjectClient.name,
+              meeting.Project.name,
+              meeting.name,
+              meeting.description,
+              meeting.startDate,
+              meeting.endDate,
+              meeting.status,
+              meeting.method,
+              meeting.createdAt,
+              meeting.updatedAt,
+            ]),
+          ],
+    });
+
+    const sheetClient = workbook.addWorksheet('Client i am in');
+
+    const clients = await this.prismaService.projectClient.findMany({
+      include: {
+        Project: {
+          include: { ProjectClient: true },
+        },
+      },
+      where: {
+        Project: {
+          some: {
+            ProjectMember: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+        },
+        createdAt: {
+          gte: new Date(`${year}-01-01`),
+          lte: new Date(`${year}-12-31`),
+        },
+      },
+    });
+
+    const isClientsEmpty = clients.length === 0;
+    const emptyArrayClient = [['', '', '', '', '', '', '']];
+
+    sheetClient.addTable({
+      name: 'clientTable',
+      ref: 'A1',
+      headerRow: true,
+      displayName: 'Client',
+      columns: [
+        { name: 'No', filterButton: true },
+        { name: 'Name', filterButton: true },
+        { name: 'Code', filterButton: true },
+        { name: 'Created At', filterButton: true },
+        { name: 'Updated At', filterButton: true },
+      ],
+      rows: isClientsEmpty
+        ? emptyArrayClient
+        : [
+            ...clients.map((client, index) => [
+              index + 1,
+              client.name,
+              client.code,
+              client.createdAt,
+              client.updatedAt,
+            ]),
+          ],
+    });
+
+    const ext = '.xlsx';
+    const now = new Date();
+    const nowAsString = now.toISOString().replace(/:/g, '-');
+    const generateFilename = `report-developer-${nowAsString}${ext}`;
+    const fullPath = `${pathReportExcel}/${generateFilename}`;
+    const isDirExist = fs.existsSync(pathReportExcel);
+
+    if (!isDirExist) {
+      fs.mkdirSync(pathReportExcel, { recursive: true });
+    }
+
+    await workbook.xlsx.writeFile(fullPath);
+
+    const mappingFullPath = `${process.cwd()}/${fullPath}`;
+
+    return {
+      error: false,
+      message: 'Success generate report developer excel',
       name: generateFilename,
       relativePath: fullPath,
       fullPath: mappingFullPath,

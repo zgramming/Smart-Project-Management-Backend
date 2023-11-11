@@ -39,4 +39,22 @@ export class ProjectReportController {
 
     return result;
   }
+
+  @Post('developer')
+  @HttpCode(200)
+  async findAllDeveloper(@Query() query: any, @Req() req: any) {
+    const { year } = query;
+    const {
+      userPayloadJWT,
+    }: {
+      userPayloadJWT: UserPayloadJWT;
+    } = req;
+
+    const result = await this.projectReportService.generateReportDeveloper(
+      userPayloadJWT.sub,
+      year,
+    );
+
+    return result;
+  }
 }
