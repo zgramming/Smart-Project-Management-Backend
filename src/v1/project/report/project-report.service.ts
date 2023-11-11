@@ -144,7 +144,7 @@ export class ProjectReportService {
     userId: number,
     params?: ProjectReportGenerateProjectManagerQuery,
   ) {
-    const { year } = params || { year: new Date().getFullYear() };
+    const year = params?.year || new Date().getFullYear();
     const workbook = new ExcelJS.Workbook();
 
     const sheetProject = workbook.addWorksheet('Project i am in');
@@ -163,6 +163,9 @@ export class ProjectReportService {
       },
     });
 
+    const isProjectsEmpty = projects.length === 0;
+    const emptyArray = [['', '', '', '', '', '']];
+
     sheetProject.addTable({
       name: 'projectTable',
       ref: 'A1',
@@ -176,16 +179,19 @@ export class ProjectReportService {
         { name: 'Created At', filterButton: true },
         { name: 'Updated At', filterButton: true },
       ],
-      rows: [
-        ...projects.map((project, index) => [
-          index + 1,
-          project.name,
-          project.code,
-          project.status,
-          project.createdAt,
-          project.updatedAt,
-        ]),
-      ],
+      rows: isProjectsEmpty
+        ? // We need to add empty array if there is no data, because it will throw error if we dont add empty array
+          emptyArray
+        : [
+            ...projects.map((project, index) => [
+              index + 1,
+              project.name,
+              project.code,
+              project.status,
+              project.createdAt,
+              project.updatedAt,
+            ]),
+          ],
     });
 
     const sheetDocument = workbook.addWorksheet('Document Created By Me');
@@ -202,7 +208,8 @@ export class ProjectReportService {
         },
       },
     });
-
+    const isDocumentsEmpty = documents.length === 0;
+    const emptyArrayDocument = [['', '', '', '', '', '', '']];
     sheetDocument.addTable({
       name: 'documentTable',
       ref: 'A1',
@@ -217,17 +224,19 @@ export class ProjectReportService {
         { name: 'Created At', filterButton: true },
         { name: 'Updated At', filterButton: true },
       ],
-      rows: [
-        ...documents.map((document, index) => [
-          index + 1,
-          document.Project.name,
-          document.name,
-          document.description,
-          document.file,
-          document.createdAt,
-          document.updatedAt,
-        ]),
-      ],
+      rows: isDocumentsEmpty
+        ? emptyArrayDocument
+        : [
+            ...documents.map((document, index) => [
+              index + 1,
+              document.Project.name,
+              document.name,
+              document.description,
+              document.file,
+              document.createdAt,
+              document.updatedAt,
+            ]),
+          ],
     });
 
     const sheetMeeting = workbook.addWorksheet('Meeting Created By Me');
@@ -246,7 +255,8 @@ export class ProjectReportService {
         },
       },
     });
-
+    const isMeetingsEmpty = meetings.length === 0;
+    const emptyArrayMeeting = [['', '', '', '', '', '', '']];
     sheetMeeting.addTable({
       name: 'meetingTable',
       ref: 'A1',
@@ -261,17 +271,19 @@ export class ProjectReportService {
         { name: 'Created At', filterButton: true },
         { name: 'Updated At', filterButton: true },
       ],
-      rows: [
-        ...meetings.map((meeting, index) => [
-          index + 1,
-          meeting.Project.ProjectClient.name,
-          meeting.Project.name,
-          meeting.name,
-          meeting.description,
-          meeting.createdAt,
-          meeting.updatedAt,
-        ]),
-      ],
+      rows: isMeetingsEmpty
+        ? emptyArrayMeeting
+        : [
+            ...meetings.map((meeting, index) => [
+              index + 1,
+              meeting.Project.ProjectClient.name,
+              meeting.Project.name,
+              meeting.name,
+              meeting.description,
+              meeting.createdAt,
+              meeting.updatedAt,
+            ]),
+          ],
     });
 
     const sheetTask = workbook.addWorksheet('Task Created By Me');
@@ -292,6 +304,9 @@ export class ProjectReportService {
       },
     });
 
+    const isTasksEmpty = tasks.length === 0;
+    const emptyArrayTask = [['', '', '', '', '', '', '', '', '', '', '']];
+
     sheetTask.addTable({
       name: 'taskTable',
       ref: 'A1',
@@ -310,27 +325,30 @@ export class ProjectReportService {
         { name: 'Created At', filterButton: true },
         { name: 'Updated At', filterButton: true },
       ],
-      rows: [
-        ...tasks.map((task, index) => [
-          index + 1,
-          task.Project.ProjectClient.name,
-          task.Project.name,
-          task.User.name,
-          task.name,
-          task.startDate,
-          task.endDate,
-          task.degreeOfDifficulty,
-          task.status,
-          task.createdAt,
-          task.updatedAt,
-        ]),
-      ],
+      rows: isTasksEmpty
+        ? emptyArrayTask
+        : [
+            ...tasks.map((task, index) => [
+              index + 1,
+              task.Project.ProjectClient.name,
+              task.Project.name,
+              task.User.name,
+              task.name,
+              task.startDate,
+              task.endDate,
+              task.degreeOfDifficulty,
+              task.status,
+              task.createdAt,
+              task.updatedAt,
+            ]),
+          ],
     });
 
+    const ext = '.xlsx';
     const now = new Date();
     const nowAsString = now.toISOString().replace(/:/g, '-');
-    const generateFilename = `project-manager-report-${nowAsString}`;
-    const fullPath = `${pathReportExcel}/${generateFilename}.xlsx`;
+    const generateFilename = `report-project-manager-${nowAsString}${ext}`;
+    const fullPath = `${pathReportExcel}/${generateFilename}`;
     const isDirExist = fs.existsSync(pathReportExcel);
 
     if (!isDirExist) {
@@ -342,7 +360,9 @@ export class ProjectReportService {
     return {
       error: false,
       message: 'Success generate report project manager excel',
-      data: mappingFullPath,
+      name: generateFilename,
+      relativePath: fullPath,
+      fullPath: mappingFullPath,
     };
   }
 }
