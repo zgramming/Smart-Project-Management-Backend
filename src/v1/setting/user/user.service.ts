@@ -44,6 +44,8 @@ export class UserService {
         select: {
           id: true,
           name: true,
+          username: true,
+          status: true,
           roleId: true,
 
           role: {
@@ -56,9 +58,12 @@ export class UserService {
         },
       });
 
+      const total = await this.prisma.user.count();
+
       return {
         error: false,
         message: 'User retrieved successfully',
+        total,
         data: result,
       };
     } catch (error) {
@@ -74,9 +79,10 @@ export class UserService {
         },
         select: {
           id: true,
-          roleId: true,
           name: true,
           username: true,
+          status: true,
+          roleId: true,
           role: {
             select: {
               id: true,

@@ -435,7 +435,7 @@ model ProjectMeetingMember {
   ProjectMeeting   ProjectMeeting @relation(fields: [projectMeetingId], references: [id], onDelete: Cascade)
 
   userId Int  @map("user_id")
-  User   User @relation(fields: [userId], references: [id])
+  User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

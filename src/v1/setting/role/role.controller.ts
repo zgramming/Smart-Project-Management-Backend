@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -25,8 +26,14 @@ export class RoleController {
   }
 
   @Get()
-  findAll() {
-    return this.roleService.findAll();
+  findAll(@Query() query: any) {
+    const { limit = 100, page = 1, code = undefined, name = undefined } = query;
+    return this.roleService.findAll({
+      limit: Number(limit),
+      page: Number(page),
+      code: code,
+      name: name,
+    });
   }
 
   @Get(':id')

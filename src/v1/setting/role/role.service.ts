@@ -3,7 +3,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { PrismaService } from 'src/prisma.service';
 import { ActiveStatusEnum } from '@prisma/client';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
+import { IRolesFindAllQueryParams } from './query-param/role-findall.query';
 
 @Injectable()
 export class RoleService {
@@ -26,19 +26,28 @@ export class RoleService {
     };
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: IRolesFindAllQueryParams) {
     const page = params?.page || 1;
     const limit = params?.limit || 100;
+    const name = params?.name;
 
     const offset = (page - 1) * limit;
     const result = await this.prisma.role.findMany({
+      where: {
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
       take: limit,
       skip: offset,
     });
+    const total = await this.prisma.role.count();
 
     return {
       message: 'Roles retrieved successfully',
       error: false,
+      total,
       data: result,
     };
   }

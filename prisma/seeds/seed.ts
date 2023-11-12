@@ -15,19 +15,19 @@ const encryptPassword = async (password: string) => {
 const prisma = new PrismaClient();
 
 const IDUser = {
-  SUPERADMIN: 1,
-  ADMIN: 2,
-  DEVELOPER: 3,
-  PROJECT_MANAGER: 4,
-  OWNER: 5,
+  SUPERADMIN: 9991,
+  ADMIN: 9992,
+  DEVELOPER: 9993,
+  PROJECT_MANAGER: 9994,
+  OWNER: 9995,
 };
 
 const IDRole = {
-  SUPERADMIN: 1,
-  ADMIN: 2,
-  DEVELOPER: 3,
-  PROJECT_MANAGER: 4,
-  OWNER: 5,
+  SUPERADMIN: 9991,
+  ADMIN: 9992,
+  DEVELOPER: 9993,
+  PROJECT_MANAGER: 9994,
+  OWNER: 9995,
 };
 
 const IDModul = {
@@ -87,35 +87,35 @@ const userSeeder = async ({ onlyTruncate = false }: SeederType) => {
   const result = await prisma.user.createMany({
     data: [
       {
-        id: 1,
+        id: IDUser.SUPERADMIN,
         roleId: IDRole.SUPERADMIN,
         username: 'zeffry',
         name: 'Zeffry Reynando',
         password: await encryptPassword('12345678'),
       },
       {
-        id: 2,
+        id: IDUser.ADMIN,
         roleId: IDRole.ADMIN,
         username: 'syarif',
         name: 'Syarif Hidayatullah',
         password: await encryptPassword('12345678'),
       },
       {
-        id: 3,
+        id: IDUser.DEVELOPER,
         roleId: IDRole.DEVELOPER,
         username: 'nakia',
         name: 'Annisa Nakia Shakila',
         password: await encryptPassword('12345678'),
       },
       {
-        id: 4,
+        id: IDUser.PROJECT_MANAGER,
         roleId: IDRole.PROJECT_MANAGER,
         username: 'rifda',
         name: 'Rifda Kamila',
         password: await encryptPassword('12345678'),
       },
       {
-        id: 5,
+        id: IDUser.OWNER,
         roleId: IDRole.OWNER,
         username: 'ricky',
         name: 'Ricky Achmad Alvieri',
