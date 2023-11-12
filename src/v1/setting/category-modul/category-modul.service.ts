@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryModulDto } from './dto/create-category-modul.dto';
 import { UpdateCategoryModulDto } from './dto/update-category-modul.dto';
 import { PrismaService } from 'src/prisma.service';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
 import { handlingCustomError } from 'src/utils/function';
+import { ICategoryModulFindAllQueryParams } from './query-param/category-modul-findall.query';
 
 @Injectable()
 export class CategoryModulService {
@@ -24,17 +24,26 @@ export class CategoryModulService {
     }
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: ICategoryModulFindAllQueryParams) {
     try {
-      const { limit = 100, page = 1 } = params;
+      const { limit = 100, page = 1, name } = params;
       const result = await this.prisma.categoryModul.findMany({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
         take: limit,
         skip: (page - 1) * limit,
       });
 
+      const total = await this.prisma.categoryModul.count();
+
       return {
         error: false,
         message: 'Category modul list',
+        total: total,
         data: result,
       };
     } catch (error) {

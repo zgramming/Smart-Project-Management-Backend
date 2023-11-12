@@ -27,10 +27,11 @@ export class ModulController {
 
   @Get()
   async findAll(@Query() query: any) {
-    const { page = 1, limit = 100 } = query;
+    const { page = 1, limit = 100, name } = query;
     return this.modulService.findAll({
       page: Number(page),
       limit: Number(limit),
+      name,
     });
   }
 

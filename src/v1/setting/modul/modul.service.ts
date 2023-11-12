@@ -2,14 +2,25 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateModulDto } from './dto/create-modul.dto';
 import { UpdateModulDto } from './dto/update-modul.dto';
 import { PrismaService } from 'src/prisma.service';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
 import { handlingCustomError } from 'src/utils/function';
+import { IModulFindAllQueryParam } from './query-param/modul-findall.query';
 
 @Injectable()
 export class ModulService {
   constructor(private readonly prisma: PrismaService) {}
   async create(createModulDto: CreateModulDto) {
     try {
+      const isExistsCategoryModul = await this.prisma.categoryModul.findUnique({
+        where: { id: createModulDto.categoryModulId },
+      });
+
+      if (!isExistsCategoryModul) {
+        throw new NotFoundException({
+          error: true,
+          message: 'Category Modul not found',
+        });
+      }
+
       const result = await this.prisma.modul.create({
         data: createModulDto,
       });
@@ -24,17 +35,29 @@ export class ModulService {
     }
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: IModulFindAllQueryParam) {
     try {
-      const { page = 1, limit = 100 } = params;
+      const page = params?.page || 1;
+      const limit = params?.limit || 10;
+      const name = params?.name;
+
       const result = await this.prisma.modul.findMany({
         take: limit,
         skip: (page - 1) * limit,
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
       });
+
+      const total = await this.prisma.modul.count();
 
       return {
         error: false,
         message: 'Modul has been retrieved',
+        total,
         data: result,
       };
     } catch (error) {

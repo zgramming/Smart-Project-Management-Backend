@@ -3,7 +3,7 @@ import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { handlingCustomError } from 'src/utils/function';
 import { PrismaService } from 'src/prisma.service';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
+import { IMenuFindAllQueryParams } from './query-param/menu-findall.query';
 
 @Injectable()
 export class MenuService {
@@ -24,17 +24,66 @@ export class MenuService {
     }
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: IMenuFindAllQueryParams) {
     try {
-      const { page = 1, limit = 100 } = params;
+      const page = params?.page || 1;
+      const limit = params?.limit || 100;
+      const name = params?.name;
+
       const result = await this.prisma.menu.findMany({
         take: limit,
         skip: (page - 1) * limit,
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
+        select: {
+          id: true,
+          parentMenuId: true,
+          modulId: true,
+          name: true,
+          code: true,
+          prefix: true,
+          description: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          Modul: {
+            select: {
+              id: true,
+              name: true,
+              categoryModulId: true,
+              CategoryModul: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          ParentMenu: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          ChildrenMenu: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
       });
+
+      const total = await this.prisma.menu.count();
 
       return {
         error: false,
         message: 'Menu has been retrieved',
+        total,
         data: result,
       };
     } catch (error) {
@@ -46,6 +95,29 @@ export class MenuService {
     try {
       const result = await this.prisma.menu.findUnique({
         where: { id },
+      });
+
+      if (!result) {
+        throw new NotFoundException({
+          error: true,
+          message: 'Menu not found',
+        });
+      }
+
+      return {
+        error: false,
+        message: 'Menu has been retrieved',
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
+  }
+
+  async findByModulId(modulId: number) {
+    try {
+      const result = await this.prisma.menu.findMany({
+        where: { modulId },
       });
 
       if (!result) {
