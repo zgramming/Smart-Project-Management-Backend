@@ -100,4 +100,52 @@ export class AccessCategoryModulService {
       return handlingCustomError(error);
     }
   }
+
+  async findSelectedAndUnselectedByRoleId(roleId: number) {
+    try {
+      const result = await this.prisma.$transaction(async () => {
+        const selected = await this.prisma.accessCategoryModul.findMany({
+          where: {
+            roleId,
+          },
+          include: {
+            CategoryModul: true,
+          },
+        });
+
+        const unselected = await this.prisma.categoryModul.findMany({
+          where: {
+            NOT: {
+              id: {
+                in: selected.map((item) => item.categoryModulId),
+              },
+            },
+          },
+        });
+
+        const mappingSelectedAccess = selected.map((value) => ({
+          categoryModulId: value.categoryModulId,
+          name: value.CategoryModul.name,
+        }));
+
+        const mappingUnselectedAccess = unselected.map((value) => ({
+          categoryModulId: value.id,
+          name: value.name,
+        }));
+
+        return {
+          selected: mappingSelectedAccess,
+          unselected: mappingUnselectedAccess,
+        };
+      });
+
+      return {
+        error: false,
+        message: 'Success get selected and unselected access category modul',
+        data: result,
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
+  }
 }

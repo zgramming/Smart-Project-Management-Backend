@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Get, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Req,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { AccessCategoryModulService } from './access-category-modul.service';
 import { CreateAccessCategoryModulDto } from './dto/create-access-category-modul.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
@@ -26,5 +35,12 @@ export class AccessCategoryModulController {
     } = req;
 
     return this.accessCategoryModulService.findByRoleId(userPayloadJWT.roleId);
+  }
+
+  @Get('role/:roleId/selected-unselected-access')
+  findSelectedUnselectedAccess(@Param('roleId', ParseIntPipe) roleId: number) {
+    return this.accessCategoryModulService.findSelectedAndUnselectedByRoleId(
+      roleId,
+    );
   }
 }
