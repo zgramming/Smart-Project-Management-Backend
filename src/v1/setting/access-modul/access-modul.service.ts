@@ -82,4 +82,67 @@ export class AccessModulService {
       return handlingCustomError(error);
     }
   }
+
+  async findSelectedAndUnselectedAccessByRole(roleId: number) {
+    try {
+      const getSelectedAccessCategoryModul =
+        await this.prisma.accessCategoryModul.findMany({
+          where: {
+            roleId,
+          },
+          select: {
+            categoryModulId: true,
+          },
+        });
+
+      const getModulByCategoryModulId = await this.prisma.modul.findMany({
+        where: {
+          categoryModulId: {
+            in: getSelectedAccessCategoryModul.map(
+              (item) => item.categoryModulId,
+            ),
+          },
+        },
+      });
+
+      const getSelectedAccess = await this.prisma.accessModul.findMany({
+        where: {
+          roleId,
+        },
+        include: {
+          Modul: true,
+        },
+      });
+
+      const getUnselectedAccess = getModulByCategoryModulId.filter(
+        (item) =>
+          !getSelectedAccess.map((item) => item.modulId).includes(item.id),
+      );
+
+      const mappingSelectedAccess = getSelectedAccess.map((item) => ({
+        categoryModulId: item.categoryModulId,
+        modulId: item.modulId,
+        name: item.Modul.name,
+        code: item.Modul.code,
+      }));
+
+      const mappingUnselectedAccess = getUnselectedAccess.map((item) => ({
+        categoryModulId: item.categoryModulId,
+        modulId: item.id,
+        name: item.name,
+        code: item.code,
+      }));
+
+      return {
+        error: false,
+        message: 'Access Modul Retrieved Successfully',
+        data: {
+          selected: mappingSelectedAccess,
+          unselected: mappingUnselectedAccess,
+        },
+      };
+    } catch (error) {
+      return handlingCustomError(error);
+    }
+  }
 }

@@ -27,6 +27,13 @@ export class AccessModulController {
     return this.accessModulService.findAll();
   }
 
+  @Get('role/:roleId/selected-unselected-access')
+  findSelectedUnselectedAccess(@Param('roleId', ParseIntPipe) roleId: number) {
+    return this.accessModulService.findSelectedAndUnselectedAccessByRole(
+      roleId,
+    );
+  }
+
   @Get('role/:roleId')
   findByRole(@Param('roleId', ParseIntPipe) roleId: number) {
     return this.accessModulService.findByRoleId(roleId);
