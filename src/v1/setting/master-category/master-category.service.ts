@@ -3,7 +3,7 @@ import { CreateMasterCategoryDto } from './dto/create-master-category.dto';
 import { UpdateMasterCategoryDto } from './dto/update-master-category.dto';
 import { handlingCustomError } from 'src/utils/function';
 import { PrismaService } from 'src/prisma.service';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
+import { IMasterCategoryFindAllQuery } from './query-param/master-category-findall.query';
 
 @Injectable()
 export class MasterCategoryService {
@@ -24,17 +24,43 @@ export class MasterCategoryService {
     }
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: IMasterCategoryFindAllQuery) {
     try {
-      const { limit = 100, page = 1 } = params;
+      const page = params?.page || 1;
+      const limit = params?.limit || 100;
+      const name = params?.name;
       const result = await this.prisma.masterCategory.findMany({
         take: Number(limit),
         skip: Number((page - 1) * limit),
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
+        include: {
+          ParentMasterCategory: true,
+          _count: {
+            select: {
+              MasterData: true,
+            },
+          },
+        },
+      });
+
+      const total = await this.prisma.masterCategory.count({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
       });
 
       return {
         error: false,
         message: 'Master Category retrieved successfully',
+        total,
         data: result,
       };
     } catch (error) {
