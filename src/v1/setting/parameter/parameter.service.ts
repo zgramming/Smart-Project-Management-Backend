@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateParameterDto } from './dto/create-parameter.dto';
 import { UpdateParameterDto } from './dto/update-parameter.dto';
 import { PrismaService } from 'src/prisma.service';
-import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
 import { handlingCustomError } from 'src/utils/function';
+import { IParameterFindAllQueryParam } from './query-param/parameter-findall.query';
 
 @Injectable()
 export class ParameterService {
@@ -24,17 +24,37 @@ export class ParameterService {
     }
   }
 
-  async findAll(params?: BaseQueryParamsInterface) {
+  async findAll(params?: IParameterFindAllQueryParam) {
     try {
-      const { limit = 100, page = 1 } = params;
+      const page = params?.page || 1;
+      const limit = params?.limit || 100;
+      const name = params?.name;
+      console.log({ params });
+
       const result = await this.prisma.parameter.findMany({
         take: limit,
         skip: limit * (page - 1),
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
+      });
+
+      const total = await this.prisma.parameter.count({
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
       });
 
       return {
         error: false,
         message: 'Parameter retrieved successfully',
+        total,
         data: result,
       };
     } catch (error) {

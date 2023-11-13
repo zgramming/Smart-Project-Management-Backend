@@ -27,10 +27,11 @@ export class ParameterController {
 
   @Get()
   findAll(@Query() query: any) {
-    const { limit = 100, page = 1 } = query;
+    const { limit = 100, page = 1, name } = query;
     return this.parameterService.findAll({
       limit: Number(limit),
       page: Number(page),
+      name,
     });
   }
 
