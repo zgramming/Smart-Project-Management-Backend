@@ -68,7 +68,11 @@ export class AccessModulService {
           roleId,
         },
         include: {
-          Modul: true,
+          Modul: {
+            include: {
+              Menu: true,
+            },
+          },
           Role: true,
         },
       });

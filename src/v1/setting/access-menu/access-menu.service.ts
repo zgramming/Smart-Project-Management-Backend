@@ -73,10 +73,26 @@ export class AccessMenuService {
         where: {
           roleId,
         },
-        include: {
-          Menu: true,
-          Modul: true,
-          Role: true,
+        select: {
+          id: true,
+          menuId: true,
+          modulId: true,
+          roleId: true,
+          allowedAccess: true,
+          Modul: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+          Menu: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
         },
       });
 
