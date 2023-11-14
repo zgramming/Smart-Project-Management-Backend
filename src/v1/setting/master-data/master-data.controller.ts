@@ -10,8 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { MasterDataService } from './master-data.service';
-import { CreateMasterDatumDto } from './dto/create-master-datum.dto';
-import { UpdateMasterDatumDto } from './dto/update-master-datum.dto';
+import { CreateMasterDatumDto } from './dto/master-data-create.dto';
+import { UpdateMasterDatumDto } from './dto/master-data-update.dto';
 import { prefixSettingUrl } from 'src/utils/constant';
 import { ValidateJWTGuard } from 'src/guards/validate_jwt.guard';
 

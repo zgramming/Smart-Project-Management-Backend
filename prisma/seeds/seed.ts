@@ -351,6 +351,12 @@ const menuSeeder = async ({ onlyTruncate = false }: SeederType) => {
       },
       {
         modulId: IDModul.SETTING,
+        code: 'MNU_SETTING_MASTER_DATA',
+        name: 'Master Data',
+        prefix: 'setting/master-data',
+      },
+      {
+        modulId: IDModul.SETTING,
         code: 'MNU_SETTING_PARAMETER',
         name: 'Parameter',
         prefix: 'setting/parameter',

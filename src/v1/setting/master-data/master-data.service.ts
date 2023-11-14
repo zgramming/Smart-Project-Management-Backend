@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateMasterDatumDto } from './dto/create-master-datum.dto';
-import { UpdateMasterDatumDto } from './dto/update-master-datum.dto';
+import { CreateMasterDatumDto } from './dto/master-data-create.dto';
+import { UpdateMasterDatumDto } from './dto/master-data-update.dto';
 import { PrismaService } from 'src/prisma.service';
 import { handlingCustomError } from 'src/utils/function';
 import { BaseQueryParamsInterface } from 'src/interface/base_query_params.interface';
@@ -11,22 +11,20 @@ export class MasterDataService {
   async create(createMasterDatumDto: CreateMasterDatumDto) {
     try {
       const masterCategory = await this.prisma.masterCategory.findUnique({
-        where: { id: createMasterDatumDto.masterCategoryId },
+        where: { code: createMasterDatumDto.masterCategoryCode },
       });
 
       if (!masterCategory) {
         throw new NotFoundException({
           error: false,
-          message: `Master Category with id ${createMasterDatumDto.masterCategoryId} not found`,
+          message: `Master Category with code ${createMasterDatumDto.masterCategoryCode} not found`,
         });
       }
-
-      const masterCategoryCode = masterCategory.code;
 
       const result = await this.prisma.masterData.create({
         data: {
           ...createMasterDatumDto,
-          masterCategoryCode,
+          masterCategoryId: masterCategory.id,
         },
       });
 
@@ -54,12 +52,8 @@ export class MasterDataService {
       return {
         error: false,
         message: 'Get all master data success',
+        total,
         data: result,
-        meta: {
-          total,
-          page: Number(page),
-          last_page: Math.ceil(total / limit),
-        },
       };
     } catch (error) {
       return handlingCustomError(error);
@@ -95,9 +89,14 @@ export class MasterDataService {
         where: { masterCategoryCode },
       });
 
+      const total = await this.prisma.masterData.count({
+        where: { masterCategoryCode },
+      });
+
       return {
         error: false,
         message: 'Get master data success',
+        total,
         data: result,
       };
     } catch (error) {
@@ -108,13 +107,13 @@ export class MasterDataService {
   async update(id: number, updateMasterDatumDto: UpdateMasterDatumDto) {
     try {
       const masterCategory = await this.prisma.masterCategory.findUnique({
-        where: { id: updateMasterDatumDto.masterCategoryId },
+        where: { code: updateMasterDatumDto.masterCategoryCode },
       });
 
       if (!masterCategory) {
         throw new NotFoundException({
           error: false,
-          message: `Master Category with id ${updateMasterDatumDto.masterCategoryId} not found`,
+          message: `Master Category with code ${updateMasterDatumDto.masterCategoryCode} not found`,
         });
       }
 
@@ -124,6 +123,7 @@ export class MasterDataService {
         where: { id },
         data: {
           ...updateMasterDatumDto,
+          masterCategoryId: masterCategory.id,
           masterCategoryCode,
         },
       });

@@ -3,12 +3,15 @@ import { Transform } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsString, ValidateIf } from 'class-validator';
 
 export class CreateMasterCategoryDto {
-  @Transform(({ value }) => Number(value))
   @ValidateIf((o) => {
     const result = o.parentMasterCategoryId !== undefined;
     return result;
   })
   @IsInt()
+  @Transform(({ value }) => {
+    if (!value) return value;
+    return Number(value);
+  })
   parentMasterCategoryId?: number;
 
   @IsNotEmpty()

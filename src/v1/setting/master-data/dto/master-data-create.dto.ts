@@ -1,14 +1,19 @@
 import { ActiveStatusEnum } from '@prisma/client';
+import { Transform } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsString, ValidateIf } from 'class-validator';
 
 export class CreateMasterDatumDto {
   @ValidateIf((o) => o.parentMasterDataId !== undefined)
   @IsInt()
+  @Transform(({ value }) => {
+    if (!value) return value;
+    return Number(value);
+  })
   parentMasterDataId?: number;
 
   @IsNotEmpty()
-  @IsInt()
-  masterCategoryId: number;
+  @IsString()
+  masterCategoryCode: string;
 
   @IsNotEmpty()
   @IsString()
