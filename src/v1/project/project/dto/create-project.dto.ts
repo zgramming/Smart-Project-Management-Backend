@@ -1,4 +1,8 @@
-import { ActiveStatusEnum, ProjectStatusEnum } from '@prisma/client';
+import {
+  ActiveStatusEnum,
+  ApproveStatusEnum,
+  ProjectStatusEnum,
+} from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -35,6 +39,8 @@ export class CreateProjectDto {
   endDate: Date;
 
   status?: ProjectStatusEnum;
+
+  approveStatus?: ApproveStatusEnum;
 
   @IsNumber()
   createdBy: number;

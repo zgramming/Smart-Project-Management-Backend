@@ -287,12 +287,6 @@ const menuSeeder = async ({ onlyTruncate = false }: SeederType) => {
         name: 'Dashboard',
         prefix: 'owner/dashboard',
       },
-      {
-        modulId: IDModul.OWNER,
-        code: 'MNU_OWNER_REPORT',
-        name: 'Report',
-        prefix: 'owner/report',
-      },
 
       // Admin
       {

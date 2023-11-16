@@ -274,6 +274,12 @@ model Parameter {
 
 //! Main Modul
 
+enum ApproveStatusEnum {
+  APPROVED
+  REJECTED
+  PENDING
+}
+
 enum DegreeOfDifficultyEnum {
   EASY
   MEDIUM
@@ -458,6 +464,7 @@ model ProjectTask {
   endDate            DateTime               @map("end_date")
   degreeOfDifficulty DegreeOfDifficultyEnum @default(EASY) @map("degree_of_difficulty")
   status             ProjectTaskStatusEnum  @default(ON_PROGRESS)
+  approveStatus      ApproveStatusEnum      @default(PENDING) @map("approve_status")
 
   createdBy            Int  @map("created_by")
   ProjectTaskCreatedBy User @relation(name: "ProjectTaskCreatedBy", fields: [createdBy], references: [id], onDelete: Cascade)
