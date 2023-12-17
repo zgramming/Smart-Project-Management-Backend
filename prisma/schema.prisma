@@ -463,7 +463,6 @@ model ProjectTask {
   startDate          DateTime               @map("start_date")
   endDate            DateTime               @map("end_date")
   degreeOfDifficulty DegreeOfDifficultyEnum @default(EASY) @map("degree_of_difficulty")
-  linkTask           String?                @map("link_task")
   status             ProjectTaskStatusEnum  @default(ON_PROGRESS)
   approveStatus      ApproveStatusEnum      @default(PENDING) @map("approve_status")
 
