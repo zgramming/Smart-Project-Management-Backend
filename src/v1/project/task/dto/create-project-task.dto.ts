@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
+  IsUrl,
   ValidateIf,
 } from 'class-validator';
 
@@ -31,6 +32,11 @@ export class CreateProjectTaskDto {
 
   @IsEnum(DegreeOfDifficultyEnum)
   degreeOfDifficulty: DegreeOfDifficultyEnum;
+
+  @ValidateIf((o) => o.link_task !== undefined)
+  @IsString()
+  @IsUrl()
+  link_task?: string;
 
   @ValidateIf((o) => o.status !== undefined)
   @IsEnum(ProjectTaskStatusEnum)

@@ -261,6 +261,7 @@ export class ProjectService {
     // 3. Total Meeting
     // 4. Total Task
     // 5. Top 5 Project will be end soon
+    // 6. New update from assigned task to you today
 
     const now = new Date();
     const nowPlusOneMonth = new Date(new Date().setMonth(now.getMonth() + 1));
@@ -330,15 +331,56 @@ export class ProjectService {
       },
     });
 
+    // Find New update assigned task from developer to you today
+    const todayOnlyYearMonth = new Date(
+      `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`,
+    );
+
+    // Top 5 Update assign task from developer to you today will be shown
+    const newUpdateFromAssignedTaskToYouToday =
+      await this.prismaService.projectTask.findMany({
+        take: 5,
+        where: {
+          createdBy: userId,
+          updatedBy: {
+            not: userId,
+          },
+          updatedAt: {
+            gte: todayOnlyYearMonth,
+          },
+        },
+        orderBy: {
+          updatedAt: 'asc',
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          degreeOfDifficulty: true,
+          startDate: true,
+          endDate: true,
+          status: true,
+          Project: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+    // Get running SQL query previous function
+
     return {
       error: false,
       message: 'Statistic retrieved successfully',
       data: {
-        totalProject: totalProject,
-        totalDocument: totalDocument,
-        totalMeeting: totalMeeting,
-        totalTask: totalTask,
-        projectsWillBeEndSoon: projectsWillBeEndSoon,
+        totalProject,
+        totalDocument,
+        totalMeeting,
+        totalTask,
+        projectsWillBeEndSoon,
+        newUpdateFromAssignedTaskToYouToday,
       },
     };
   }
@@ -365,6 +407,7 @@ export class ProjectService {
     // 3.9. Total Task Difficulty VERY HARD
     // 4. Total Client you have worked with
     // 5. Meeting will be held in the next 7 days
+    // 6. New Task assigned to you
 
     const now = new Date();
     const nowPlusSevenDays = new Date(new Date().setDate(now.getDate() + 7));
@@ -632,28 +675,62 @@ export class ProjectService {
       },
     });
 
+    // Top 5 Task with status PENDING and CREATED_AT is today will be shown
+    const todayOnlyYearMonth = new Date(
+      `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`,
+    );
+    const newTaskAssignedToYou = await this.prismaService.projectTask.findMany({
+      take: 5,
+      where: {
+        userId,
+        status: 'PENDING',
+        createdAt: {
+          gte: todayOnlyYearMonth,
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        degreeOfDifficulty: true,
+        startDate: true,
+        endDate: true,
+        status: true,
+        Project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
     return {
       error: false,
       message: 'Statistic retrieved successfully',
       data: {
-        totalProject: totalProject,
-        totalProjectActive: totalProjectActive,
-        totalProjectInactive: totalProjectInactive,
-        totalProjectSuspend: totalProjectSuspend,
-        totalProjectFinish: totalProjectFinish,
-        totalMeeting: totalMeeting,
-        totalTask: totalTask,
-        totalTaskStatusFinish: totalTaskStatusFinish,
-        totalTaskStatusPending: totalTaskStatusPending,
-        totalTaskStatusInProgress: totalTaskStatusInProgress,
-        totalTaskStatusNeedHelp: totalTaskStatusNeedHelp,
-        totalTaskStatusCancel: totalTaskStatusCancel,
-        totalTaskDifficultyEasy: totalTaskDifficultyEasy,
-        totalTaskDifficultyMedium: totalTaskDifficultyMedium,
-        totalTaskDifficultyHard: totalTaskDifficultyHard,
-        totalTaskDifficultyVeryHard: totalTaskDifficultyVeryHard,
-        totalClient: totalClient,
-        meetingWillBeHeld: meetingWillBeHeld,
+        totalProject,
+        totalProjectActive,
+        totalProjectInactive,
+        totalProjectSuspend,
+        totalProjectFinish,
+        totalMeeting,
+        totalTask,
+        totalTaskStatusFinish,
+        totalTaskStatusPending,
+        totalTaskStatusInProgress,
+        totalTaskStatusNeedHelp,
+        totalTaskStatusCancel,
+        totalTaskDifficultyEasy,
+        totalTaskDifficultyMedium,
+        totalTaskDifficultyHard,
+        totalTaskDifficultyVeryHard,
+        totalClient,
+        meetingWillBeHeld,
+        newTaskAssignedToYou,
       },
     };
   }

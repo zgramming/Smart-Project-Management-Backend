@@ -8,4 +8,7 @@ export class UpdateStatusProjectTaskDto {
   @IsNotEmpty()
   @IsEnum(ProjectTaskStatusEnum)
   status: ProjectTaskStatusEnum;
+
+  @IsNotEmpty()
+  linkTask: string;
 }

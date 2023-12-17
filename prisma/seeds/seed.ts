@@ -14,6 +14,12 @@ const encryptPassword = async (password: string) => {
 
 const prisma = new PrismaClient();
 
+const IDProjectClient = {
+  Client1: '65408c8c-9bd4-4a0c-b5ab-738f1f377ed1',
+  Client2: '65408c8c-9bd4-4a0c-b5ab-738f1f377ed2',
+  Client3: '65408c8c-9bd4-4a0c-b5ab-738f1f377ed3',
+};
+
 const IDUser = {
   SUPERADMIN: 9991,
   ADMIN: 9992,
@@ -89,35 +95,35 @@ const userSeeder = async ({ onlyTruncate = false }: SeederType) => {
       {
         id: IDUser.SUPERADMIN,
         roleId: IDRole.SUPERADMIN,
-        username: 'zeffry',
+        username: 'superadmin',
         name: 'Zeffry Reynando',
         password: await encryptPassword('12345678'),
       },
       {
         id: IDUser.ADMIN,
         roleId: IDRole.ADMIN,
-        username: 'syarif',
+        username: 'admin',
         name: 'Syarif Hidayatullah',
         password: await encryptPassword('12345678'),
       },
       {
         id: IDUser.DEVELOPER,
         roleId: IDRole.DEVELOPER,
-        username: 'nakia',
+        username: 'developer',
         name: 'Annisa Nakia Shakila',
         password: await encryptPassword('12345678'),
       },
       {
         id: IDUser.PROJECT_MANAGER,
         roleId: IDRole.PROJECT_MANAGER,
-        username: 'rifda',
+        username: 'project_manager',
         name: 'Rifda Kamila',
         password: await encryptPassword('12345678'),
       },
       {
         id: IDUser.OWNER,
         roleId: IDRole.OWNER,
-        username: 'ricky',
+        username: 'owner',
         name: 'Ricky Achmad Alvieri',
         password: await encryptPassword('12345678'),
       },
@@ -301,81 +307,81 @@ const menuSeeder = async ({ onlyTruncate = false }: SeederType) => {
         name: 'User',
         prefix: 'setting/user',
       },
-      {
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_CATEGORY_MODUL',
-        name: 'Category Modul',
-        prefix: 'setting/category-modul',
-      },
-      {
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_MODUL',
-        name: 'Modul',
-        prefix: 'setting/modul',
-      },
-      {
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_MENU',
-        name: 'Menu',
-        prefix: 'setting/menu',
-      },
-      {
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_ACCESS_CATEGORY_MODUL',
-        name: 'Access Category Modul',
-        prefix: 'setting/access-category-modul',
-      },
-      {
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_ACCESS_MODUL',
-        name: 'Access Modul',
-        prefix: 'setting/access-modul',
-      },
-      {
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_ACCESS_MENU',
-        name: 'Access Menu',
-        prefix: 'setting/access-menu',
-      },
-      {
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_MASTER_CATEGORY',
-        name: 'Master Category',
-        prefix: 'setting/master-category',
-      },
-      {
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_MASTER_DATA',
-        name: 'Master Data',
-        prefix: 'setting/master-data',
-      },
-      {
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_PARAMETER',
-        name: 'Parameter',
-        prefix: 'setting/parameter',
-      },
-      {
-        id: 9999,
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_PARENT_MENU',
-        name: 'Parent Menu',
-        prefix: 'setting/parent-menu',
-      },
-      {
-        parentMenuId: 9999,
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_PARENT_MENU_CHILDREN_1',
-        name: 'Parent Menu Children 1',
-        prefix: 'setting/parent-menu/children-1',
-      },
-      {
-        parentMenuId: 9999,
-        modulId: IDModul.SETTING,
-        code: 'MNU_SETTING_PARENT_MENU_CHILDREN_2',
-        name: 'Parent Menu Children 2',
-        prefix: 'setting/parent-menu/children-2',
-      },
+      // {
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_CATEGORY_MODUL',
+      //   name: 'Category Modul',
+      //   prefix: 'setting/category-modul',
+      // },
+      // {
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_MODUL',
+      //   name: 'Modul',
+      //   prefix: 'setting/modul',
+      // },
+      // {
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_MENU',
+      //   name: 'Menu',
+      //   prefix: 'setting/menu',
+      // },
+      // {
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_ACCESS_CATEGORY_MODUL',
+      //   name: 'Access Category Modul',
+      //   prefix: 'setting/access-category-modul',
+      // },
+      // {
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_ACCESS_MODUL',
+      //   name: 'Access Modul',
+      //   prefix: 'setting/access-modul',
+      // },
+      // {
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_ACCESS_MENU',
+      //   name: 'Access Menu',
+      //   prefix: 'setting/access-menu',
+      // },
+      // {
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_MASTER_CATEGORY',
+      //   name: 'Master Category',
+      //   prefix: 'setting/master-category',
+      // },
+      // {
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_MASTER_DATA',
+      //   name: 'Master Data',
+      //   prefix: 'setting/master-data',
+      // },
+      // {
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_PARAMETER',
+      //   name: 'Parameter',
+      //   prefix: 'setting/parameter',
+      // },
+      // {
+      //   id: 9999,
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_PARENT_MENU',
+      //   name: 'Parent Menu',
+      //   prefix: 'setting/parent-menu',
+      // },
+      // {
+      //   parentMenuId: 9999,
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_PARENT_MENU_CHILDREN_1',
+      //   name: 'Parent Menu Children 1',
+      //   prefix: 'setting/parent-menu/children-1',
+      // },
+      // {
+      //   parentMenuId: 9999,
+      //   modulId: IDModul.SETTING,
+      //   code: 'MNU_SETTING_PARENT_MENU_CHILDREN_2',
+      //   name: 'Parent Menu Children 2',
+      //   prefix: 'setting/parent-menu/children-2',
+      // },
     ],
   });
 
@@ -585,7 +591,7 @@ const projectSeeder = async ({ onlyTruncate = false }: SeederType) => {
     data: [
       {
         id: 1,
-        clientId: '1',
+        clientId: IDProjectClient.Client1,
         code: 'PRJ_1',
         name: 'Project 1',
         startDate: new Date(),
@@ -594,7 +600,7 @@ const projectSeeder = async ({ onlyTruncate = false }: SeederType) => {
       },
       {
         id: 2,
-        clientId: '1',
+        clientId: IDProjectClient.Client1,
         code: 'PRJ_2',
         name: 'Project 2',
         startDate: new Date(),
@@ -603,7 +609,7 @@ const projectSeeder = async ({ onlyTruncate = false }: SeederType) => {
       },
       {
         id: 3,
-        clientId: '2',
+        clientId: IDProjectClient.Client2,
         code: 'PRJ_3',
         name: 'Project 3',
         startDate: new Date(),
@@ -629,19 +635,19 @@ const projectClientSeeder = async ({ onlyTruncate = false }: SeederType) => {
   const result = await prisma.projectClient.createMany({
     data: [
       {
-        id: '1',
+        id: IDProjectClient.Client1,
         code: 'CLT_1',
         name: 'PT. ABC',
         createdBy: IDUser.PROJECT_MANAGER,
       },
       {
-        id: '2',
+        id: IDProjectClient.Client2,
         code: 'CLT_2',
         name: 'PT. DEF',
         createdBy: IDUser.PROJECT_MANAGER,
       },
       {
-        id: '3',
+        id: IDProjectClient.Client3,
         code: 'CLT_3',
         name: 'PT. GHI',
         createdBy: IDUser.PROJECT_MANAGER,

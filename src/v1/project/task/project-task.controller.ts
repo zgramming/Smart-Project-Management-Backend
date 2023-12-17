@@ -79,6 +79,11 @@ export class ProjectTaskController {
     return this.projectTaskService.update(id, updateProjectTaskDto);
   }
 
+  @Get(':id/history')
+  findHistoryByProjectTaskId(@Param('id') id: string) {
+    return this.projectTaskService.findHistory(id);
+  }
+
   @Patch(':id/status')
   updateAndCreateHistory(
     @Param('id') id: string,

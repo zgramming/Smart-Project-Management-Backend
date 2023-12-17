@@ -463,6 +463,7 @@ model ProjectTask {
   startDate          DateTime               @map("start_date")
   endDate            DateTime               @map("end_date")
   degreeOfDifficulty DegreeOfDifficultyEnum @default(EASY) @map("degree_of_difficulty")
+  linkTask           String?                @map("link_task")
   status             ProjectTaskStatusEnum  @default(ON_PROGRESS)
   approveStatus      ApproveStatusEnum      @default(PENDING) @map("approve_status")
 
@@ -489,6 +490,7 @@ model ProjectTaskHistory {
   userId Int  @map("user_id")
   User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  linkTask    String?               @map("link_task")
   description String?
   status      ProjectTaskStatusEnum @default(ON_PROGRESS)
 

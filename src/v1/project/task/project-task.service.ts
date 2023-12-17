@@ -5,10 +5,14 @@ import { handlingCustomError } from 'src/utils/function';
 import { PrismaService } from 'src/prisma.service';
 import { IProjectTaskFindAllQuery } from './query_param/project-task-findall.query';
 import { UpdateStatusProjectTaskDto } from './dto/update-status-project-task.dto';
+import { ProjectTaskHistoryService } from '../task-history/project-task-history.service';
 
 @Injectable()
 export class ProjectTaskService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly projectTaskHistoryService: ProjectTaskHistoryService,
+  ) {}
   async create(createProjectTaskDto: CreateProjectTaskDto) {
     try {
       const result = await this.prismaService.projectTask.create({
@@ -256,6 +260,18 @@ export class ProjectTaskService {
     }
   }
 
+  async findHistory(id: string) {
+    try {
+      const result = await this.projectTaskHistoryService.findByProjectTaskId(
+        id,
+      );
+
+      return result;
+    } catch (error) {
+      return handlingCustomError(error);
+    }
+  }
+
   async update(id: string, updateProjectTaskDto: UpdateProjectTaskDto) {
     try {
       const task = await this.prismaService.projectTask.findUnique({
@@ -317,8 +333,10 @@ export class ProjectTaskService {
         },
         data: {
           status: dto.status,
+          updatedBy: userId,
           ProjectTaskHistory: {
             create: {
+              linkTask: dto.linkTask,
               description: dto.description,
               status: dto.status,
               userId: userId,
