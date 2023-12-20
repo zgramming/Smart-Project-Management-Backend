@@ -399,7 +399,7 @@ export class ProjectService {
     // 3.1. Total Task Status FINISH
     // 3.2. Total Task Status PENDING
     // 3.3. Total Task Status ON_PROGRESS
-    // 3.4. Total Task Status NEED HELP
+    // 3.4. Total Task Status REVISION
     // 3.5. Total Task Status CANCEL
     // 3.6. Total Task Difficulty EASY
     // 3.7. Total Task Difficulty MEDIUM
@@ -549,10 +549,10 @@ export class ProjectService {
         },
       });
 
-    const totalTaskStatusNeedHelp = await this.prismaService.projectTask.count({
+    const totalTaskStatusRevision = await this.prismaService.projectTask.count({
       where: {
         userId,
-        status: 'NEED_HELP',
+        status: 'REVISION',
         createdAt: {
           gte: new Date(`${year}-01-01`),
           lte: new Date(`${year}-12-31`),
@@ -722,7 +722,7 @@ export class ProjectService {
         totalTaskStatusFinish,
         totalTaskStatusPending,
         totalTaskStatusInProgress,
-        totalTaskStatusNeedHelp,
+        totalTaskStatusRevision,
         totalTaskStatusCancel,
         totalTaskDifficultyEasy,
         totalTaskDifficultyMedium,

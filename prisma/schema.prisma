@@ -303,7 +303,7 @@ enum ProjectTaskStatusEnum {
   FINISH
   PENDING
   ON_PROGRESS
-  NEED_HELP
+  REVISION
   CANCEL
 }
 
