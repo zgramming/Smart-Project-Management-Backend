@@ -400,3 +400,4 @@ dist
 .serverless/**/*.zip
 uploads
 public
+.vercel
