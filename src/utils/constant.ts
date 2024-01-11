@@ -23,4 +23,4 @@ export const jwtConstants = {
   secret: process.env.JWT_SECRET_KEY,
 };
 
-export const whitelistUrl = ['https://spm.my.id'];
+export const whitelistUrl = ['https://www.spm.my.id'];
