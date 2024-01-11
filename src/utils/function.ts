@@ -44,6 +44,12 @@ export const uploadFile = (
   directory: string,
   options?: UploadFileOptions,
 ) => {
+  const isDirExist = fs.existsSync(directory);
+
+  if (!isDirExist) {
+    fs.mkdirSync(directory, { recursive: true });
+  }
+
   const { name: existingName } = options ?? {};
 
   let filename = generateRandomNameFile(file);
