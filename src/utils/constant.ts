@@ -22,3 +22,5 @@ export const pathReportExcel = 'uploads/report';
 export const jwtConstants = {
   secret: process.env.JWT_SECRET_KEY,
 };
+
+export const whitelistUrl = ['https://spm.my.id'];
