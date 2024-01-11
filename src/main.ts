@@ -13,10 +13,11 @@ async function bootstrap() {
 
   if (isProduction) {
     app.enableCors({
-      credentials: true,
       origin: whitelistUrl,
-      allowedHeaders: '*',
-      methods: '*',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
+      credentials: true,
     });
   } else {
     app.enableCors();
